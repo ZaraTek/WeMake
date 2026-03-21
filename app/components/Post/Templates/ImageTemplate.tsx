@@ -15,10 +15,16 @@ const ImageTemplate = ({ post }: ImageTemplateProps) => {
       <Text className="mt-1 text-base text-muted-text">
         {post.TemplateData.Subtitle}
       </Text>
-      <Image
-        source={{ uri: post.TemplateData.ImageUrl }}
-        className="mt-4 h-56 w-full rounded-xl border border-subtle-border"
-      />
+      <View
+        className="mt-4 w-full overflow-hidden rounded-xl border border-subtle-border"
+        style={{ aspectRatio: 1 }}
+      >
+        <Image
+          source={{ uri: post.TemplateData.ImageUrl }}
+          className="h-full w-full"
+          resizeMode="cover"
+        />
+      </View>
       <Text className="mt-4 text-base leading-6 text-text">{post.writeUpData}</Text>
     </View>
   );

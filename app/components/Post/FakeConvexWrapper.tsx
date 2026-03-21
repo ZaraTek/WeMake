@@ -8,11 +8,12 @@ const FakeConvexWrapper = () => {
     const [post] = useState<PostType>({
         postTemplate: 'Audio',
         TemplateData: {
-            AudioUrl: 'https://placehold.co/600x400',
-            Title: 'Title',
-            Subtitle: 'Subtitle',
+            AudioUrl: 'https://commondatastorage.googleapis.com/codeskulptor-demos/pyman_assets/ateapill.ogg',
+            Title: 'Pyman',
+            Subtitle: 'An Introduction to Interactive Programming in Python',
+            CoverImageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsdCkZbZazHiwiBpoTBuRJVETWSjjJbZgekQ&s'
         },
-        writeUpData: "I am a write up for the post",
+        writeUpData: "This is a song I made.",
     });
 
     return (
