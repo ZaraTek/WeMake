@@ -227,9 +227,6 @@ const AudioTemplate = ({ post }: AudioTemplateProps) => {
         </View>
       </View>
       <PostAudioPlayer uri={post.TemplateData.AudioUrl} />
-      <Text className="mt-4 text-base leading-6 text-text">
-        {post.writeUpData}
-      </Text>
     </View>
   );
 };
