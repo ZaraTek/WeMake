@@ -1,5 +1,5 @@
 export type ImageTemplateData = {
-  ImageUrl: string;
+  ImageUrl: string[];
   Title: string;
   Subtitle: string;
 };
