@@ -157,6 +157,7 @@ const AudioTemplate = ({ post }: AudioTemplateProps) => {
   const spin = useSharedValue(0);
 
   useEffect(() => {
+    spin.value = 0;
     spin.value = withRepeat(
       withTiming(360, {
         duration: SPIN_DURATION_MS,
@@ -171,25 +172,22 @@ const AudioTemplate = ({ post }: AudioTemplateProps) => {
   }, [spin]);
 
   const spinAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${spin.value}deg` }],
+    transform: [{ rotate: `${spin.value % 360}deg` }],
   }));
 
   return (
     <View className="w-full rounded-2xl border border-subtle-border bg-inner-background p-4">
-      <Text className="text-2xl font-bold text-primary-accent">
-        {post.TemplateData.Title}
-      </Text>
-      <Text className="mt-1 text-base text-muted-text">
-        {post.TemplateData.Subtitle}
-      </Text>
-      <View className="mt-4 w-full items-center">
-        <View
-          style={{
-            width: RECORD_SIZE,
-            height: RECORD_SIZE,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
+      <View className="mt-4 w-full flex-row items-center">
+        <Animated.View
+          style={[
+            {
+              width: RECORD_SIZE,
+              height: RECORD_SIZE,
+              alignItems: "center",
+              justifyContent: "center",
+            },
+            spinAnimatedStyle,
+          ]}
         >
           <Image
             source={recordPlayerAsset}
@@ -218,6 +216,14 @@ const AudioTemplate = ({ post }: AudioTemplateProps) => {
               />
             </View>
           ) : null}
+        </Animated.View>
+        <View className="flex-1 ml-6">
+          <Text className="text-2xl font-bold text-primary-accent">
+            {post.TemplateData.Title}
+          </Text>
+          <Text className="mt-1 text-base text-muted-text">
+            {post.TemplateData.Subtitle}
+          </Text>
         </View>
       </View>
       <PostAudioPlayer uri={post.TemplateData.AudioUrl} />
