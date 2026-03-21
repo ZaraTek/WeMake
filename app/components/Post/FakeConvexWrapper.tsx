@@ -1,14 +1,14 @@
 import { useState } from "react";
 import Template from "./Templates/Template";
-import type { PostType } from "./postTypes";
+import type { PostType } from "../../../types/postTypes";
 
 
 const FakeConvexWrapper = () => {
 // use state for the font size
     const [post] = useState<PostType>({
-        postTemplate: 'Image',
+        postTemplate: 'Audio',
         TemplateData: {
-            ImageUrl: ['https://placehold.co/600x400'],
+            AudioUrl: 'https://placehold.co/600x400',
             Title: 'Title',
             Subtitle: 'Subtitle',
         },

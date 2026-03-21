@@ -1,6 +1,6 @@
 import React from "react";
 import { Image, Text } from "react-native";
-import type { PostType } from "../postTypes";
+import type { PostType } from "../../../../types/postTypes";
 import AudioTemplate from "./AudioTemplate";
 import ImageTemplate from "./ImageTemplate";
 import VideoTemplate from "./VideoTemplate";

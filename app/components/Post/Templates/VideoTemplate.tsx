@@ -1,9 +1,9 @@
 import React from "react";
 import { Text, View } from "react-native";
-import type { PostType } from "../postTypes";
+import type { VideoPost } from "../../../../types/postTypes";
 
 type VideoTemplateProps = {
-  post: PostType;
+  post: VideoPost;
 };
 
 const VideoTemplate = ({ post }: VideoTemplateProps) => {
@@ -11,7 +11,7 @@ const VideoTemplate = ({ post }: VideoTemplateProps) => {
     <View>
       <Text>{post.TemplateData.Title}</Text>
       <Text>{post.TemplateData.Subtitle}</Text>
-      <Text>Video URL: {post.TemplateData.ImageUrl}</Text>
+      <Text>Video URL: {post.TemplateData.VideoUrl}</Text>
       <Text>{post.writeUpData}</Text>
     </View>
   );
