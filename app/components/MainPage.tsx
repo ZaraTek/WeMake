@@ -20,6 +20,7 @@ import Row from './layout/Row';
 import AppButton from './ui/buttons/AppButton';
 import { UserIcon } from 'lucide-react-native';
 import { useClerk } from '@clerk/clerk-expo';
+import FakeConvexWrapper from './Post/FakeConvexWrapper';
 
 
 
@@ -55,7 +56,7 @@ const MainPage: React.FC<MainPageProps> = ({
     // You can add new game-specific components here as needed
 
     return (
-        <View className='w-full h-full'>
+        <View className='w-full h-full bg-l'>
             <AppButton variant="outline" className="h-14 w-14" onPress={() => signOut()}>
                 <UserIcon size={24} color={"white"} />
             </AppButton>
@@ -85,6 +86,8 @@ const MainPage: React.FC<MainPageProps> = ({
                     </AppButton>
                 </Row>
             </Row>
+
+            
 
         </View>
     );
