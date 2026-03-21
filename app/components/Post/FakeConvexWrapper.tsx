@@ -13,7 +13,7 @@ const FakeConvexWrapper = () => {
         };
         writeUpData: string;
     }>({
-        postTemplate: 'Text',
+        postTemplate: 'Image',
         TemplateData: {
             ImageUrl: 'https://placehold.co/600x400',
             Title: 'Title',
