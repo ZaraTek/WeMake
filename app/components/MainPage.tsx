@@ -11,6 +11,7 @@ import { GameInfo } from 'types/games';
 import TopSiteBar from './layout/TopSiteBar';
 import PoppinsTextInput from './ui/forms/PoppinsTextInput';
 import JoinHandler from './ui/forms/JoinHandler';
+import FakeConvexWrapper from './Post/FakeConvexWrapper';
 
 
 
@@ -88,9 +89,12 @@ const MainPage: React.FC<MainPageProps> = ({
             </View>
 
             <TopSiteBar isInAGame={false} setActiveGameId={setActiveGameId} />
+            
+            <FakeConvexWrapper />
             <View className='flex-1 justify-center items-center'>
                 <PoppinsText className='text-lg text-center mb-4'>
                     Welcome to your base project!
+                    
                 </PoppinsText>
                 <PoppinsText className='text-sm text-center text-gray-600'>
                     Game components have been removed. Add your custom components here.
