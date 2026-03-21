@@ -28,13 +28,14 @@ export const useSyncUserData = (userData: any, setUserData: any) => {
             const needsUpdate =
                 !userData.email ||
                 userData.email !== clerkEmail ||
-                userData.name !== clerkName;
+                userData.name !== clerkName ||
+                !userData.userId;
 
             if (needsUpdate) {
+                // Only set the specific fields we need, avoid spreading the entire userData object
                 setUserData({
-                    ...userData,
-                    name: clerkName,
                     email: clerkEmail,
+                    name: clerkName,
                     userId: user.id,
                 });
                 console.log("✅ Synced UserData with Clerk:");

@@ -7,10 +7,19 @@ import PoppinsText from './ui/text/PoppinsText';
 import { useUserVariable } from 'hooks/useUserVariable';
 import { useUserListGet } from 'hooks/useUserListGet';
 import { useUserListSet } from 'hooks/useUserListSet';
+import { useSyncUserData } from 'hooks/useSyncUserData';
 import { GameInfo } from 'types/games';
+import { UserData } from 'types/userData';
 import TopSiteBar from './layout/TopSiteBar';
 import PoppinsTextInput from './ui/forms/PoppinsTextInput';
 import JoinHandler from './ui/forms/JoinHandler';
+import Feed from './Feed';
+import Profile from './Profile';
+import NewPost from './NewPost';
+import Row from './layout/Row';
+import AppButton from './ui/buttons/AppButton';
+import { UserIcon } from 'lucide-react-native';
+import { useClerk } from '@clerk/clerk-expo';
 
 
 
@@ -25,12 +34,6 @@ const MainPage: React.FC<MainPageProps> = ({
 }) => {
     const [isHeroDialogOpen, setIsHeroDialogOpen] = useState(false);
 
-    interface UserData {
-        email?: string;
-        name?: string;
-        userId?: string
-    };
-
     const [userData, setUserData] = useUserVariable<UserData>({
         key: "userData",
         defaultValue: {},
@@ -38,64 +41,51 @@ const MainPage: React.FC<MainPageProps> = ({
         searchKeys: ["name"],
     });
 
-    const userId = userData.value.userId || "";
+    useSyncUserData(userData.value, setUserData);
 
-    const myGames = useUserListGet<GameInfo>({
-        key: "games",
-        userIds: [userId],
-    });
+    const currentUserId = userData.value.userId || "LOADING";
 
-    const [activeGameId, setActiveGameId] = useUserVariable<string>({
-        key: "activeGameId",
-        defaultValue: "",
-    });
+    // useState for page state
+    type Page = "feed" | "profile" | "newPost";
+    const [activePage, setActivePage] = useState<Page>("feed");
+    const { signOut } = useClerk();
 
-    const generateGameId = () => {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let result = '';
-        for (let i = 0; i < 8; i++) {
-            result += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return result;
-    }
-
-    const addNewGame = () => {
-        const newGameId = generateGameId();
-
-        setUserListItem({
-            key: "games",
-            itemId: newGameId,
-            value: {
-                id: newGameId,
-                name: "Game 1",
-                description: "Description 1",
-            },
-            filterKey: "id",
-            privacy: "PUBLIC",
-        });
-    }
-
-    const setUserListItem = useUserListSet();
-    const isInAGame = activeGameId.value !== "";
 
     // Game-related functionality removed - game components were cleared
     // You can add new game-specific components here as needed
 
     return (
-        <View className=' justify-between w-full h-full'>
-            <View className='absolute right-4 top-20 z-10'>
-                
-            </View>
+        <View className='w-full h-full'>
+            <AppButton variant="outline" className="h-14 w-14" onPress={() => signOut()}>
+                <UserIcon size={24} color={"white"} />
+            </AppButton>
 
-            <TopSiteBar isInAGame={false} setActiveGameId={setActiveGameId} />
-            <View className='flex-1 justify-center items-center'>
-                <PoppinsText className='text-lg text-center mb-4'>
-                    Welcome to your base project!
-                </PoppinsText>
-                <PoppinsText className='text-sm text-center text-gray-600'>
-                    Game components have been removed. Add your custom components here.
-                </PoppinsText>
-            </View>
+            <PoppinsText weight='medium' color='white'>Main Page</PoppinsText>
+            <PoppinsText weight='medium' color='white'>Current User ID: {currentUserId}</PoppinsText>
+
+
+
+            {activePage === "feed" && <Feed />}
+            {activePage === "profile" && <Profile currentUserId={currentUserId} />}
+            {activePage === "newPost" && <NewPost />}
+
+
+
+            <Row gap={3} className='absolute bottom-0 left-0 right-0 p-4 items-center justify-center'>
+                <Row className='w-min '>
+
+                    <AppButton variant='primary' className='w-30' onPress={() => setActivePage("feed")}>
+                        <PoppinsText weight='medium' color='white'>Feed</PoppinsText>
+                    </AppButton>
+                    <AppButton variant='primary' className='w-30' onPress={() => setActivePage("profile")}>
+                        <PoppinsText weight='medium' color='white'>Profile</PoppinsText>
+                    </AppButton>
+                    <AppButton variant='primary' className='w-30' onPress={() => setActivePage("newPost")}>
+                        <PoppinsText weight='medium' color='white'>New Post</PoppinsText>
+                    </AppButton>
+                </Row>
+            </Row>
+
         </View>
     );
 };
