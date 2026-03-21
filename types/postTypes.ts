@@ -14,7 +14,7 @@ export type AudioTemplateData = {
 export type TextTemplateData = {
   Title: string;
   Subtitle?: string;
-  Body: string;
+  Highlight: string;
 };
 
 export type VideoTemplateData = {
