@@ -72,7 +72,6 @@ const VideoTemplate = ({ post }: VideoTemplateProps) => {
           </View>
         </Pressable>
         </View>
-        <Text className="mt-4 text-base leading-6 text-text">{post.writeUpData}</Text>
       </View>
     </View>
   );

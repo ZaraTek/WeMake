@@ -23,8 +23,6 @@ const ImageTemplate = ({ post }: ImageTemplateProps) => {
           className="mt-4 h-56 w-full rounded-xl border border-subtle-border"
         />
       ))}
-      
-      <Text className="mt-4 text-base leading-6 text-text">{post.writeUpData}</Text>
     </View>
   );
 };
