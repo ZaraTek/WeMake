@@ -7,6 +7,7 @@ import type { PostType, ImagePost } from '../../types/postTypes';
 import Template from './Post/Templates/Template';
 import PoppinsText from './ui/text/PoppinsText';
 import Column from './layout/Column';
+import PublicImageUpload from './ui/imageUpload/PublicImageUpload';
 
 
 const NewPost = () => {
@@ -82,12 +83,14 @@ const NewPost = () => {
                        
                 />
 
-                <PoppinsTextInput
-                    value={imageUrl}
-                    onChangeText={setImageUrl}
-                    placeholder='Image URL'
-                    
+                <PublicImageUpload
+                    url={imageUrl}
+                    setUrl={setImageUrl}
+                    buttonLabel='Upload image'
+                    emptyLabel='No image uploaded yet.'
                 />
+
+                
 
                 <PoppinsTextInput
                     value={writeUpData}

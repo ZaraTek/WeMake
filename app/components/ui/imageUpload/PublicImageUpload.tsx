@@ -1,3 +1,22 @@
+/**
+ * PublicImageUpload - A reusable React Native component for uploading images to UploadThing via Convex
+ * 
+ * SETUP REQUIRED:
+ * 
+ * Step 1: Get your UploadThing token
+ * - Go to your UploadThing dashboard: https://uploadthing.com/dashboard
+ * - Find your app and copy the UploadThing Token (base64-encoded string)
+ * 
+ * Step 2: Set the token in Convex environment
+ * - Run: npx convex env set UPLOADTHING_TOKEN "your-uploadthing-token-here"
+ * - The token should look like: "eyJhcGlLZXkiOiJza19saXZlXzg1YzcwY2I1YjkxNDJlZTkwMDM5ZDMzOWMyY2FiZmZhN2Q3ZDY4MmFlYmEwM2EyYzAzZmMzZmYyZDlmYzkzYmQiLCJhcHBJZCI6ImNqbW5nMm01cHEiLCJyZWdpb25zIjpbInNlYTEiXX0="
+ * 
+ * Props:
+ * - url: string - Current image URL
+ * - setUrl: function - Function to update the image URL
+ * - buttonLabel?: string - Label for upload button (default: "Upload image")
+ * - emptyLabel?: string - Label when no image is uploaded (default: "No image uploaded yet.")
+ */
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import { useAction } from 'convex/react';
 import { ActivityIndicator, Image, View } from 'react-native';
