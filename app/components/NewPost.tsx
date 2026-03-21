@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { useUserListSet } from '../../hooks/useUserListSet';
 import PoppinsTextInput from './ui/forms/PoppinsTextInput';
 import AppButton from './ui/buttons/AppButton';
-import type { PostType } from './Post/postTypes';
+import type { PostType, ImagePost } from '../../types/postTypes';
 import Template from './Post/Templates/Template';
 import PoppinsText from './ui/text/PoppinsText';
 
@@ -16,8 +16,8 @@ const NewPost = () => {
     const [writeUpData, setWriteUpData] = useState('I am a write up for the post');
 
     // Create live preview post object
-    const post: PostType = {
-        postTemplate,
+    const post: ImagePost = {
+        postTemplate: 'Image',
         TemplateData: {
             ImageUrl: [imageUrl],
             Title: title,
@@ -37,7 +37,7 @@ const NewPost = () => {
             key: 'posts',
             itemId: postId,
             value: {
-                postTemplate: postTemplate,
+                postTemplate: 'Image',
                 TemplateData: {
                     ImageUrl: [imageUrl],
                     Title: title,
