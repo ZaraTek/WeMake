@@ -4,12 +4,15 @@ import { useUserListGet } from '../../hooks/useUserListGet';
 import { useUserVariable } from '../../hooks/useUserVariable';
 import PoppinsText from './ui/text/PoppinsText';
 import { UserData } from '../../types/userData';
+import AppButton from './ui/buttons/AppButton';
+import { UserIcon } from 'lucide-react-native';
 
 interface ProfileProps {
     currentUserId: string;
+    signOut: () => void;
 }
 
-const Profile = ({ currentUserId }: ProfileProps) => {
+const Profile = ({ currentUserId, signOut }: ProfileProps) => {
 
     const posts = useUserListGet({
         key: "posts",
@@ -19,6 +22,9 @@ const Profile = ({ currentUserId }: ProfileProps) => {
 
     return (
         <View>
+            <AppButton variant="outline" className="h-14 w-14" onPress={() => signOut()}>
+                <UserIcon size={24} color={"white"} />
+            </AppButton>
             <PoppinsText weight='medium' color='white'>My Profile</PoppinsText>
             <PoppinsText weight='medium' color='white'>{`User ID: ${currentUserId}`}</PoppinsText>
             {posts?.map((post: any, index: number) => {
