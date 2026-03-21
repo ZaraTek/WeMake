@@ -1,9 +1,9 @@
 import React from "react";
 import { Image, Text, View } from "react-native";
-import type { PostType } from "../postTypes";
+import type { ImagePost } from "../../../../types/postTypes";
 
 type ImageTemplateProps = {
-  post: PostType;
+  post: ImagePost;
 };
 
 const ImageTemplate = ({ post }: ImageTemplateProps) => {
