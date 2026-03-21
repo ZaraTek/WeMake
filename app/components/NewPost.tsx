@@ -6,11 +6,12 @@ import AppButton from './ui/buttons/AppButton';
 import type { PostType, ImagePost } from '../../types/postTypes';
 import Template from './Post/Templates/Template';
 import PoppinsText from './ui/text/PoppinsText';
+import Column from './layout/Column';
 
 
 const NewPost = () => {
     const [postTemplate, setPostTemplate] = useState<"Image" | "Text" | "Video" | "Audio">('Image');
-    const [imageUrl, setImageUrl] = useState('https://placehold.co/600x400');
+    const [imageUrl, setImageUrl] = useState('https://placehold.co/600x400.png');
     const [title, setTitle] = useState('Title');
     const [subtitle, setSubtitle] = useState('Subtitle');
     const [writeUpData, setWriteUpData] = useState('I am a write up for the post');
@@ -64,43 +65,45 @@ const NewPost = () => {
 
     return (
         <View style={{ padding: 10, borderTopWidth: 1, borderTopColor: '#ccc' }}>
-            <PoppinsText weight='bold' style={{ marginBottom: 15 }}>Create New Post</PoppinsText>
+            <Column>
+                <PoppinsText weight='bold' style={{ marginBottom: 15 }}>Create New Post</PoppinsText>
 
-            <PoppinsTextInput
-                value={title}
-                onChangeText={setTitle}
-                placeholder='Title'
-                style={{ marginBottom: 10 }}
-            />
+                <PoppinsTextInput
+                    value={title}
+                    onChangeText={setTitle}
+                    placeholder='Title'
+                    
+                />
 
-            <PoppinsTextInput
-                value={subtitle}
-                onChangeText={setSubtitle}
-                placeholder='Subtitle'
-                style={{ marginBottom: 10 }}
-            />
+                <PoppinsTextInput
+                    value={subtitle}
+                    onChangeText={setSubtitle}
+                    placeholder='Subtitle'
+                       
+                />
 
-            <PoppinsTextInput
-                value={imageUrl}
-                onChangeText={setImageUrl}
-                placeholder='Image URL'
-                style={{ marginBottom: 10 }}
-            />
+                <PoppinsTextInput
+                    value={imageUrl}
+                    onChangeText={setImageUrl}
+                    placeholder='Image URL'
+                    
+                />
 
-            <PoppinsTextInput
-                value={writeUpData}
-                onChangeText={setWriteUpData}
-                placeholder='Write up content'
-                multiline
-                numberOfLines={4}
-                style={{ marginBottom: 15, height: 100 }}
-            />
+                <PoppinsTextInput
+                    value={writeUpData}
+                    onChangeText={setWriteUpData}
+                    placeholder='Write up content'
+                    multiline
+                    numberOfLines={4}
+                    className='h-20'
+                />
 
-            <AppButton onPress={handleAddPost}>
-                <Text style={{ color: 'white' }}>Create Post</Text>
-            </AppButton>
-            
-            <Template post={post} />
+                <AppButton onPress={handleAddPost}>
+                    <Text style={{ color: 'white' }}>Create Post</Text>
+                </AppButton>
+
+                <Template post={post} />
+            </Column>
         </View>
     );
 };
