@@ -49,7 +49,7 @@ const VideoTemplate = ({ post }: VideoTemplateProps) => {
         <Text className="mt-1 text-base text-muted-text">
           {post.TemplateData.Subtitle}
         </Text>
-        <View className="w-[50vw] h-[30vw]">
+        <View className="w-[50vw] h-[30vw]" style={{ marginBottom: 24 }}>
         <Pressable
           onPress={() => {
             // open the video url in the browser
