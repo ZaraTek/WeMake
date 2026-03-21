@@ -3,7 +3,7 @@ import { Text, TextStyle } from 'react-native';
 import { useFonts } from 'expo-font';
 
 type FontWeight = 'regular' | 'medium' | 'bold';
-type PoppinsTextVarient = 'default' | 'heading' | 'subtext';
+type PoppinsTextVarient = 'default' | 'heading' | 'subtext' | 'tiny-subtext';
 type TextColor = 'black' | 'white';
 
 interface PoppinsTextProps extends PropsWithChildren {
@@ -32,6 +32,10 @@ const PoppinsText = ({
 
     if (varient === 'subtext') {
         className += ' text-sm opacity-50';
+    }
+
+    if (varient === 'tiny-subtext') {
+        className += ' text-xs opacity-50';
     }
 
     if (!fontsLoaded) {

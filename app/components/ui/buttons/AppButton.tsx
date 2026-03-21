@@ -4,10 +4,11 @@ import Row from '../../layout/Row';
 
 interface AppButtonProps {
     children: React.ReactNode;
-    variant?: 'primary' | 'secondary' | 'outline' | 'grey';
+    variant?: 'primary' | 'secondary' | 'outline' | 'grey' | 'transparent';
     className?: string;
     onPress?: () => void;
     dropShadow?: boolean;
+    selected?: boolean;
 }
 
 const AppButton = ({
@@ -15,7 +16,8 @@ const AppButton = ({
     variant = 'outline',
     className = '',
     onPress,
-    dropShadow = true
+    dropShadow = true,
+    selected = false
 }: AppButtonProps) => {
     const [isPressed, setIsPressed] = useState(false);
 
@@ -38,6 +40,9 @@ const AppButton = ({
     } else if (variant === 'secondary') {
         const bg = 'bg-text';
         extraStyles = `${bg} group hover:brightness-150 active:brightness-50`;
+    } else if (variant === 'transparent') {
+        const bg = selected ? 'bg-text/10' : 'bg-none';
+        extraStyles = bg;
     }
 
     
