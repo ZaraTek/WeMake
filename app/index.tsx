@@ -43,7 +43,7 @@ export default function HomeScreen() {
 
             <Column className="w-[80vw] p-6 max-w-96 bg-text border-4 border-primary-accent items-center" gap={6}>
               <DialogHeader
-                text="Welcome to WolffsPoint"
+                text="Welcome to WeMake"
                 subtext="Sign in to get started."
                 className="w-[80vw] max-w-96"
               />
