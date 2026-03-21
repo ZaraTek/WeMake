@@ -175,7 +175,7 @@ const PublicImageUpload = ({
             <Column gap={3}>
                 <PoppinsText weight='medium'>Public image upload</PoppinsText>
 
-                <AppButton variant='green' className='w-40' onPress={handleUpload}>
+                <AppButton variant='outline' className='w-40' onPress={handleUpload}>
                     {isUploading ? (
                         <ActivityIndicator color='white' />
                     ) : (
@@ -191,17 +191,17 @@ const PublicImageUpload = ({
 
                 {url ? (
                     <Column gap={2}>
-                        <PoppinsText varient='subtext'>
+                        {/* <PoppinsText varient='subtext'>
                             {url}
-                        </PoppinsText>
+                        </PoppinsText> */}
 
-                        <View className='w-full h-56 overflow-hidden rounded-lg border border-subtle-border bg-background'>
+                        {/* <View className='w-full h-56 overflow-hidden rounded-lg border border-subtle-border bg-background'>
                             <Image
                                 source={{ uri: url }}
                                 className='w-full h-full'
                                 resizeMode='cover'
                             />
-                        </View>
+                        </View> */}
                     </Column>
                 ) : (
                     <PoppinsText varient='subtext'>{emptyLabel}</PoppinsText>

@@ -12,10 +12,10 @@ import PublicImageUpload from './ui/imageUpload/PublicImageUpload';
 
 const NewPost = () => {
     const [postTemplate, setPostTemplate] = useState<"Image" | "Text" | "Video" | "Audio">('Image');
-    const [imageUrl, setImageUrl] = useState('https://placehold.co/600x400.png');
-    const [title, setTitle] = useState('Title');
-    const [subtitle, setSubtitle] = useState('Subtitle');
-    const [writeUpData, setWriteUpData] = useState('I am a write up for the post');
+    const [imageUrl, setImageUrl] = useState('');
+    const [title, setTitle] = useState('');
+    const [subtitle, setSubtitle] = useState('');
+    const [writeUpData, setWriteUpData] = useState('');
 
     // Create live preview post object
     const post: ImagePost = {
