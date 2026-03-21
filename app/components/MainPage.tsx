@@ -42,7 +42,7 @@ const MainPage: React.FC<MainPageProps> = ({
         searchKeys: ["name"],
     });
 
-    useSyncUserData(userData.value, setUserData);
+    // useSyncUserData(userData.value, setUserData);
 
     const currentUserId = userData.value.userId || "LOADING";
 
@@ -56,11 +56,13 @@ const MainPage: React.FC<MainPageProps> = ({
     // You can add new game-specific components here as needed
 
     return (
-        <View className='w-full h-full bg-l'>
-            <AppButton variant="outline" className="h-14 w-14" onPress={() => signOut()}>
+        <View className='w-full h-full p-4'>
+            {/* <AppButton variant="outline" className="h-14 w-14" onPress={() => signOut()}>
                 <UserIcon size={24} color={"white"} />
-            </AppButton>
+            </AppButton> */}
 
+            <FakeConvexWrapper></FakeConvexWrapper>
+{/*        
             <PoppinsText weight='medium' color='white'>Main Page</PoppinsText>
             <PoppinsText weight='medium' color='white'>Current User ID: {currentUserId}</PoppinsText>
 
@@ -87,7 +89,7 @@ const MainPage: React.FC<MainPageProps> = ({
                 </Row>
             </Row>
 
-            
+             */}
 
         </View>
     );

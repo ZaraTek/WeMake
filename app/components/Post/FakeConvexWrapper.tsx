@@ -9,11 +9,11 @@ const FakeConvexWrapper = () => {
         TemplateData: {
             ImageUrl: string;
             Title: string;
-            Subtitle: string;
+            Subtitle: string;  
         };
         writeUpData: string;
     }>({
-        postTemplate: 'Image',
+        postTemplate: 'Audio',
         TemplateData: {
             ImageUrl: 'https://placehold.co/600x400',
             Title: 'Title',

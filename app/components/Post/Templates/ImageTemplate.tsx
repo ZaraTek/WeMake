@@ -11,7 +11,7 @@ const ImageTemplate = ({ post }: ImageTemplateProps) => {
     <View className="w-full rounded-2xl border border-subtle-border bg-inner-background p-4">
       <Text className="text-2xl font-bold text-primary-accent">
         {post.TemplateData.Title}
-      </Text>
+      </Text> 
       <Text className="mt-1 text-base text-muted-text">
         {post.TemplateData.Subtitle}
       </Text>
