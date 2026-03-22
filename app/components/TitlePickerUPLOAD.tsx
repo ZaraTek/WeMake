@@ -6,6 +6,7 @@ import Row from './layout/Row';
 import AppButton from './ui/buttons/AppButton';
 import StatusButton from './ui/StatusButton';
 import { View } from 'react-native';
+import AnimatedWrapper from './ui/AnimatedWrapper';
 
 interface TitlePickerUPLOADProps {
     title: string;
@@ -22,35 +23,37 @@ const TitlePickerUPLOAD: React.FC<TitlePickerUPLOADProps> = ({ title, setTitle, 
     }, [title]);
 
     return (
-        <Column className='items-center justify-center w-full h-full'>
-            <View className='absolute top-0 left-0 p-4'>
-                <AppButton variant='transparent' className='absolute top-4 left-4' onPress={onBackToFeed}>
-                    <PoppinsText className='text-primary-text text-lg font-bold'>{`< Back`}</PoppinsText>
-                </AppButton>
-            </View>
-            <PoppinsText className='text-primary-text text-2xl font-bold'>What's Your Project?</PoppinsText>
-            <Row className='py-4 px-8'>
-                <PoppinsTextInput
-                    value={title}
-                    onChangeText={setTitle}
-                    placeholder='Title'
-                    className='w-full'
-                />
-            </Row>
-            {isValid ? (
-                <AppButton
-                    variant='primary'
-                    className='w-30'
-                    onPress={onNext}
+        <AnimatedWrapper>
+            <Column className='items-center justify-center w-full h-full'>
+                <View className='absolute top-0 left-0 p-4'>
+                    <AppButton variant='transparent' className='absolute top-4 left-4' onPress={onBackToFeed}>
+                        <PoppinsText className='text-primary-text text-lg font-bold'>{`< Back`}</PoppinsText>
+                    </AppButton>
+                </View>
+                <PoppinsText className='text-primary-text text-2xl font-bold'>What's Your Project?</PoppinsText>
+                <Row className='py-4 px-8'>
+                    <PoppinsTextInput
+                        value={title}
+                        onChangeText={setTitle}
+                        placeholder='Title'
+                        className='w-full'
+                    />
+                </Row>
+                {isValid ? (
+                    <AppButton
+                        variant='primary'
+                        className='w-30'
+                        onPress={onNext}
 
-                >
-                    <PoppinsText weight='medium'>{`Next >`}</PoppinsText>
-                </AppButton>
-            ) : (
-                <StatusButton buttonText={`Next >`} buttonAltText='BLANK' className='w-30' />
+                    >
+                        <PoppinsText weight='medium'>{`Next >`}</PoppinsText>
+                    </AppButton>
+                ) : (
+                    <StatusButton buttonText={`Next >`} buttonAltText='BLANK' className='w-30' />
 
-            )}
-        </Column>
+                )}
+            </Column>
+        </AnimatedWrapper>
     );
 };
 

@@ -11,6 +11,7 @@ import AppButton from './ui/buttons/AppButton';
 import StatusButton from './ui/StatusButton';
 import PoppinsText from './ui/text/PoppinsText';
 import Column from './layout/Column';
+import AnimatedWrapper from './ui/AnimatedWrapper';
 
 interface WithTemplateVIDEOProps {
     title: string;
@@ -22,6 +23,7 @@ const WithTemplateVIDEO: React.FC<WithTemplateVIDEOProps> = ({ title }) => {
     const [previewUrl, setPreviewUrl] = useState('');
     const [thumbnailUrl, setThumbnailUrl] = useState('');
     const [writeUpData, setWriteUpData] = useState('');
+    const [navigationDirection, setNavigationDirection] = useState<'forward' | 'backward'>('forward');
     const setPost = useUserListSet<PostType>();
 
     const isValid = title.trim().length > 0 && videoUrl.trim().length > 0 && previewUrl.trim().length > 0;
@@ -69,59 +71,61 @@ const WithTemplateVIDEO: React.FC<WithTemplateVIDEOProps> = ({ title }) => {
     };
 
     return (
-        <View className='p-4 h-full overflow-clip'>
-            <View className='border-b border-subtle-border pb-4'>
-                <Template post={post} />
+        <AnimatedWrapper direction={navigationDirection}>
+            <View className='p-4 h-full overflow-clip'>
+                <View className='border-b border-subtle-border pb-4'>
+                    <Template post={post} />
+                </View>
+                <ScrollShadow LinearGradientComponent={LinearGradient}>
+                    <ScrollView>
+                        <Column className='mt-6 gap-4 pb-10'>
+                            <PoppinsText className='text-primary-text text-xl font-bold'>{title}</PoppinsText>
+                            <PoppinsTextInput
+                                value={subtitle}
+                                onChangeText={setSubtitle}
+                                placeholder='Subtitle'
+                            />
+                            <PoppinsTextInput
+                                value={videoUrl}
+                                onChangeText={setVideoUrl}
+                                placeholder='Video URL'
+                                autoCapitalize='none'
+                                autoCorrect={false}
+                            />
+                            <PoppinsTextInput
+                                value={previewUrl}
+                                onChangeText={setPreviewUrl}
+                                placeholder='Preview image URL'
+                                autoCapitalize='none'
+                                autoCorrect={false}
+                            />
+                            <PoppinsTextInput
+                                value={thumbnailUrl}
+                                onChangeText={setThumbnailUrl}
+                                placeholder='Thumbnail URL'
+                                autoCapitalize='none'
+                                autoCorrect={false}
+                            />
+                            <PoppinsTextInput
+                                value={writeUpData}
+                                onChangeText={setWriteUpData}
+                                placeholder='Write up content'
+                                multiline
+                                numberOfLines={5}
+                                className='h-32'
+                            />
+                            {isValid ? (
+                                <AppButton variant='primary' className='w-full' onPress={handleAddPost}>
+                                    <PoppinsText weight='medium'>{`Create Post`}</PoppinsText>
+                                </AppButton>
+                            ) : (
+                                <StatusButton buttonText='Create Post' buttonAltText='REQUIRED' className='w-full' />
+                            )}
+                        </Column>
+                    </ScrollView>
+                </ScrollShadow>
             </View>
-            <ScrollShadow LinearGradientComponent={LinearGradient}>
-                <ScrollView>
-                    <Column className='mt-6 gap-4 pb-10'>
-                        <PoppinsText className='text-primary-text text-xl font-bold'>{title}</PoppinsText>
-                        <PoppinsTextInput
-                            value={subtitle}
-                            onChangeText={setSubtitle}
-                            placeholder='Subtitle'
-                        />
-                        <PoppinsTextInput
-                            value={videoUrl}
-                            onChangeText={setVideoUrl}
-                            placeholder='Video URL'
-                            autoCapitalize='none'
-                            autoCorrect={false}
-                        />
-                        <PoppinsTextInput
-                            value={previewUrl}
-                            onChangeText={setPreviewUrl}
-                            placeholder='Preview image URL'
-                            autoCapitalize='none'
-                            autoCorrect={false}
-                        />
-                        <PoppinsTextInput
-                            value={thumbnailUrl}
-                            onChangeText={setThumbnailUrl}
-                            placeholder='Thumbnail URL'
-                            autoCapitalize='none'
-                            autoCorrect={false}
-                        />
-                        <PoppinsTextInput
-                            value={writeUpData}
-                            onChangeText={setWriteUpData}
-                            placeholder='Write up content'
-                            multiline
-                            numberOfLines={5}
-                            className='h-32'
-                        />
-                        {isValid ? (
-                            <AppButton variant='primary' className='w-full' onPress={handleAddPost}>
-                                <PoppinsText weight='medium'>{`Create Post`}</PoppinsText>
-                            </AppButton>
-                        ) : (
-                            <StatusButton buttonText='Create Post' buttonAltText='REQUIRED' className='w-full' />
-                        )}
-                    </Column>
-                </ScrollView>
-            </ScrollShadow>
-        </View>
+        </AnimatedWrapper>
     );
 };
 

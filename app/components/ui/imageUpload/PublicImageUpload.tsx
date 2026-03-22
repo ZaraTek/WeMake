@@ -173,7 +173,6 @@ const PublicImageUpload = ({
     return (
         <Column className='w-full p-4 border-b border-subtle-border bg-light/30'>
             <Column gap={3}>
-                <PoppinsText weight='medium'>Public image upload</PoppinsText>
 
                 <AppButton variant='outline' className='w-40' onPress={handleUpload}>
                     {isUploading ? (
@@ -204,7 +203,8 @@ const PublicImageUpload = ({
                         </View> */}
                     </Column>
                 ) : (
-                    <PoppinsText varient='subtext'>{emptyLabel}</PoppinsText>
+                    // <PoppinsText varient='subtext'>{emptyLabel}</PoppinsText>
+                    <></>
                 )}
             </Column>
         </Column>
