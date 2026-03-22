@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, KeyboardAvoidingView, Platform, Image, Text } from 'react-native';
 import { Dialog } from 'heroui-native';
 import PoppinsText from '../text/PoppinsText';
@@ -29,13 +29,12 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({
     const [tempUsername, setTempUsername] = useState(profileData?.value?.username || '');
     const [tempPfpUrl, setTempPfpUrl] = useState(profileData?.value?.pfpUrl || '');
     const [tempBannerUrl, setTempBannerUrl] = useState(profileData?.value?.bannerUrl || '');
-    const [pfpLoaded, setPfpLoaded] = useState(false);
-    const [bannerLoaded, setBannerLoaded] = useState(false);
     const [loadingSequence, setLoadingSequence] = useState<'yes' | 'no' | 'yes-final'>('yes');
     const skipNextOpenResetRef = React.useRef(false);
+    const loadingTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
     
     // Track when loading sequence should end
-    const [loadingTimeout, setLoadingTimeout] = useState<NodeJS.Timeout | null>(null);
+    // const [loadingTimeout, setLoadingTimeout] = useState<NodeJS.Timeout | null>(null);
     
     // Reset loading state when URLs change
     const [lastPfpUrl, setLastPfpUrl] = useState('');
@@ -46,9 +45,6 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({
     const displayName = profileValue?.name?.trim() || resolvedTempUsername;
     const profileInitial = displayName.charAt(0).toUpperCase();
     const isProfileDataReady = !profileData.state.isSyncing;
-     
-    // Check if images are loaded (both must be loaded)
-    const imagesLoaded = pfpLoaded && bannerLoaded;
      
     // Check if save is allowed (yes-final state)
     const saveAllowed = isProfileDataReady && loadingSequence === 'yes-final';
@@ -71,19 +67,16 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({
         setTempUsername(profileValue?.username || '');
         setTempPfpUrl(profileValue?.pfpUrl || '');
         setTempBannerUrl(profileValue?.bannerUrl || '');
-        setPfpLoaded(false);
-        setBannerLoaded(false);
         setLoadingSequence('yes');
         setLastPfpUrl('');
         setLastBannerUrl('');
-        
-        if (loadingTimeout) {
-            clearTimeout(loadingTimeout);
-            setLoadingTimeout(null);
+
+        if (loadingTimeoutRef.current) {
+            clearTimeout(loadingTimeoutRef.current);
+            loadingTimeoutRef.current = null;
         }
     }, [
         isOpen,
-        loadingTimeout,
         profileData.state.isSyncing,
         profileValue?.username,
         profileValue?.pfpUrl,
@@ -94,7 +87,6 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({
     useEffect(() => {
         const currentPfpUrl = resolvedTempPfpUrl || '__blank__';
         if (currentPfpUrl !== lastPfpUrl) {
-            setPfpLoaded(false);
             setLastPfpUrl(currentPfpUrl);
             
             // Start yes → no → yes sequence
@@ -103,31 +95,21 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({
             }
             if (loadingSequence !== 'no') {
                 setLoadingSequence('no');
-                
-                // Clear existing timeout
-                if (loadingTimeout) {
-                    clearTimeout(loadingTimeout);
+
+                if (loadingTimeoutRef.current) {
+                    clearTimeout(loadingTimeoutRef.current);
                 }
-                
-                // Set 3-second timeout to go to yes-final
-                const timeout = setTimeout(() => {
+
+                loadingTimeoutRef.current = setTimeout(() => {
                     setLoadingSequence('yes-final');
-                    setLoadingTimeout(null);
+                    loadingTimeoutRef.current = null;
                 }, 3000);
-                setLoadingTimeout(timeout);
             }
         }
     }, [resolvedTempPfpUrl, lastPfpUrl, loadingSequence]);
 
     useEffect(() => {
-        if (!resolvedTempPfpUrl) {
-            setPfpLoaded(true);
-        }
-    }, [resolvedTempPfpUrl]);
-    
-    useEffect(() => {
         if (tempBannerUrl !== lastBannerUrl) {
-            setBannerLoaded(false);
             setLastBannerUrl(tempBannerUrl);
             
             // Start yes → no → yes sequence
@@ -136,24 +118,32 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({
             }
             if (loadingSequence !== 'no') {
                 setLoadingSequence('no');
-                
-                // Clear existing timeout
-                if (loadingTimeout) {
-                    clearTimeout(loadingTimeout);
+
+                if (loadingTimeoutRef.current) {
+                    clearTimeout(loadingTimeoutRef.current);
                 }
-                
-                // Set 3-second timeout to go to yes-final
-                const timeout = setTimeout(() => {
+
+                loadingTimeoutRef.current = setTimeout(() => {
                     setLoadingSequence('yes-final');
-                    setLoadingTimeout(null);
+                    loadingTimeoutRef.current = null;
                 }, 3000);
-                setLoadingTimeout(timeout);
             }
         }
     }, [tempBannerUrl, lastBannerUrl, loadingSequence]);
-    
-    // Create a new Convex client for the dialog since it renders outside the main provider
-    const convexClient = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!);
+
+    useEffect(() => {
+        return () => {
+            if (loadingTimeoutRef.current) {
+                clearTimeout(loadingTimeoutRef.current);
+                loadingTimeoutRef.current = null;
+            }
+        };
+    }, []);
+
+    const convexClient = useMemo(
+        () => new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!),
+        []
+    );
     
     const handlePickerOpen = () => {
         skipNextOpenResetRef.current = true;
@@ -225,8 +215,6 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({
                                     }}
                                     className="w-full h-full"
                                     resizeMode="cover"
-                                    onLoad={() => setBannerLoaded(true)}
-                                    onError={() => setBannerLoaded(true)} // Consider fallback as "loaded"
                                 />
                                 
                                 {/* Profile Picture Overlay */}
@@ -243,8 +231,6 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({
                                                 borderWidth: 2, 
                                                 borderColor: "#A082FF" 
                                             }}
-                                            onLoad={() => setPfpLoaded(true)}
-                                            onError={() => setPfpLoaded(true)}
                                         />
                                     ) : (
                                         <View

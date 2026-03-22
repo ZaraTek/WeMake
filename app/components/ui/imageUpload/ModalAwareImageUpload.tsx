@@ -29,6 +29,7 @@ interface ModalAwareImageUploadProps {
     url: string;
     setUrl: UrlSetter;
     buttonLabel?: string;
+    disabled?: boolean;
     onPickerOpen?: () => void;
     onPickerClose?: () => void;
 }
@@ -72,6 +73,7 @@ const ModalAwareImageUpload = ({
     url,
     setUrl,
     buttonLabel = 'Upload image',
+    disabled = false,
     onPickerOpen,
     onPickerClose
 }: ModalAwareImageUploadProps) => {
@@ -80,6 +82,10 @@ const ModalAwareImageUpload = ({
     const generatePublicImageUploadUrl = useAction(api.uploadthing.generatePublicImageUploadUrl);
 
     const handleUpload = async () => {
+        if (disabled || isUploading) {
+            return;
+        }
+
         setErrorMessage('');
 
         const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -134,7 +140,7 @@ const ModalAwareImageUpload = ({
         <Column className='w-full p-4 border-b border-subtle-border bg-light/30'>
             <Column gap={3}>
 
-                <AppButton variant='outline' className='w-40' onPress={handleUpload}>
+                <AppButton variant='outline' className='w-40' onPress={handleUpload} disabled={disabled || isUploading}>
                     {isUploading ? (
                         <ActivityIndicator color='white' />
                     ) : (

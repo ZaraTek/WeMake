@@ -85,16 +85,6 @@ const Profile = ({ currentUserId, currentUserName, signOut, auth }: ProfileProps
         setIsEditDialogOpen(true);
     };
 
-    const handleProfileSave = (updatedProfile: ProfileData) => {
-        const fallbackUsername = currentUserName?.trim().split(/\s+/)[0] || '';
-        const latestProfile = profileData?.value ?? profileData?.confirmedValue ?? { username: fallbackUsername };
-
-        setProfileData({
-            ...latestProfile,
-            ...updatedProfile,
-        });
-    };
-
     const handleLoadingChange = (loading: boolean) => {
         setIsLoading(loading);
     };
@@ -172,8 +162,6 @@ const Profile = ({ currentUserId, currentUserName, signOut, auth }: ProfileProps
             <ProfileEditDialog
                 isOpen={isEditDialogOpen}
                 onOpenChange={setIsEditDialogOpen}
-                profileData={profileData?.value}
-                onSave={handleProfileSave}
                 onLoadingChange={handleLoadingChange}
             />
 
