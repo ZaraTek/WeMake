@@ -171,6 +171,7 @@ const Profile = ({ currentUserId, currentUserName, signOut, auth }: ProfileProps
                 post={selectedPost?.post ?? null}
                 postId={selectedPost?.postId ?? null}
                 userId={currentUserId}
+                currentUserId={currentUserId}
                 auth={auth}
             />
         </>

@@ -3,11 +3,13 @@ import { View, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import ConvexDialog from './ui/dialog/ConvexDialog';
 import AppButton from './ui/buttons/AppButton';
 import PoppinsText from './ui/text/PoppinsText';
+import PostTopRow from './Post/PostTopRow';
 import PostWrapper from './Post/PostWrapper';
 import DeletePostButton from './Post/DeletePostButton';
 import { PostType } from '../../types/postTypes';
 import { ScrollShadow } from 'heroui-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import Column from './layout/Column';
 
 type ClerkAuthSnapshot = {
     isLoaded: boolean;
@@ -23,10 +25,11 @@ interface PostDialogProps {
     post: PostType | null;
     postId: string | null;
     userId: string;
+    currentUserId?: string;
     auth: ClerkAuthSnapshot;
 }
 
-const PostDialog = ({ isOpen, onOpenChange, post, postId, userId, auth }: PostDialogProps) => {
+const PostDialog = ({ isOpen, onOpenChange, post, postId, userId, currentUserId, auth }: PostDialogProps) => {
     return (
         <ConvexDialog.Root isOpen={isOpen} onOpenChange={onOpenChange}>
             <ConvexDialog.Portal className='justify-center items-center'>
@@ -45,10 +48,13 @@ const PostDialog = ({ isOpen, onOpenChange, post, postId, userId, auth }: PostDi
                             <ScrollView className="pt-10" style={{ height: '100%' }}>
                                 <View className="">
                                     {post && postId ? (
-                                        <PostWrapper post={post} postId={postId} userId={userId} />
+                                        <Column>
+                                            <PostTopRow postId={postId} userId={userId} />
+                                            <PostWrapper post={post} postId={postId} userId={userId} />
+                                        </Column>
                                     ) : null}
                                 </View>
-                                {postId ? <DeletePostButton postId={postId} onDeleted={() => onOpenChange(false)} /> : null}
+                                {postId && currentUserId === userId ? <DeletePostButton postId={postId} onDeleted={() => onOpenChange(false)} /> : null}
                             </ScrollView>
                         </ScrollShadow>
                     </ConvexDialog.Content>

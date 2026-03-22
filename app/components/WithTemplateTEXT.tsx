@@ -160,8 +160,8 @@ const WithTemplateTEXT: React.FC<WithTemplateTEXTProps> = ({ title, onBackToFeed
                         <Template post={post} />
                     </View>
                     <ScrollShadow LinearGradientComponent={LinearGradient}>
-                        <ScrollView>
-                            <Column className='mt-6 gap-4 pb-10'>
+                        <ScrollView className='h-[60vh]'>
+                            <Column className='mt-6 gap-4 pb-10 mb-20'>
                                 <PoppinsText className='text-primary-text text-xl font-bold'>{title}</PoppinsText>
                                 <TouchableOpacity
                                     onPress={handleOpenSubtitleDialog}
@@ -211,41 +211,41 @@ const WithTemplateTEXT: React.FC<WithTemplateTEXTProps> = ({ title, onBackToFeed
                     </ScrollShadow>
                 </View>
             </AnimatedWrapper>
-        
-        <TextFieldDialog
-            isOpen={isSubtitleDialogOpen}
-            onOpenChange={handleCloseSubtitleDialog}
-            value={subtitle}
-            onChangeText={setSubtitle}
-            placeholder='Subtitle'
-            inputHeight={getSubtitleInputHeight()}
-        />
 
-        <TextFieldDialog
-            isOpen={isHighlightDialogOpen}
-            onOpenChange={handleCloseHighlightDialog}
-            value={highlight}
-            onChangeText={setHighlight}
-            placeholder='Highlight'
-            multiline
-            inputHeight={getHighlightInputHeight()}
-        />
+            <TextFieldDialog
+                isOpen={isSubtitleDialogOpen}
+                onOpenChange={handleCloseSubtitleDialog}
+                value={subtitle}
+                onChangeText={setSubtitle}
+                placeholder='Subtitle'
+                inputHeight={getSubtitleInputHeight()}
+            />
 
-        <DateFieldDialog
-            isOpen={isProfileDateDialogOpen}
-            onOpenChange={handleCloseProfileDateDialog}
-            value={profileDate}
-            onChangeText={setProfileDate}
-            placeholder='Project Date'
-        />
+            <TextFieldDialog
+                isOpen={isHighlightDialogOpen}
+                onOpenChange={handleCloseHighlightDialog}
+                value={highlight}
+                onChangeText={setHighlight}
+                placeholder='Highlight'
+                multiline
+                inputHeight={getHighlightInputHeight()}
+            />
 
-        <WriteUpDialog
-            isOpen={isWriteUpDialogOpen}
-            onOpenChange={handleCloseWriteUpDialog}
-            value={writeUpData}
-            onChangeText={setWriteUpData}
-            placeholder='Write up content for your text post'
-        />
+            <DateFieldDialog
+                isOpen={isProfileDateDialogOpen}
+                onOpenChange={handleCloseProfileDateDialog}
+                value={profileDate}
+                onChangeText={setProfileDate}
+                placeholder='Project Date'
+            />
+
+            <WriteUpDialog
+                isOpen={isWriteUpDialogOpen}
+                onOpenChange={handleCloseWriteUpDialog}
+                value={writeUpData}
+                onChangeText={setWriteUpData}
+                placeholder='Write up content for your text post'
+            />
         </>
     );
 };

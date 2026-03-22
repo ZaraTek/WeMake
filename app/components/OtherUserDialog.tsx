@@ -17,11 +17,12 @@ interface OtherUserDialogProps {
     isOpen: boolean;
     onOpenChange: (open: boolean) => void;
     userId: string | null;
+    currentUserId: string;
     auth: ClerkAuthSnapshot;
     onBackToSearch: () => void;
 }
 
-const OtherUserDialog = ({ isOpen, onOpenChange, userId, auth, onBackToSearch }: OtherUserDialogProps) => {
+const OtherUserDialog = ({ isOpen, onOpenChange, userId, currentUserId, auth, onBackToSearch }: OtherUserDialogProps) => {
     return (
         <ConvexDialog.Root isOpen={isOpen} onOpenChange={onOpenChange}>
             <ConvexDialog.Portal>
@@ -39,7 +40,7 @@ const OtherUserDialog = ({ isOpen, onOpenChange, userId, auth, onBackToSearch }:
 
 
                             {userId ? (
-                                <OtherUserProfile userId={userId} onBack={() => onOpenChange(false)} showBackButton={false} />
+                                <OtherUserProfile userId={userId} currentUserId={currentUserId} auth={auth} onBack={() => onOpenChange(false)} showBackButton={false} />
                             ) : null}
                         </ScrollView>
                     </ConvexDialog.Content>

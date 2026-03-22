@@ -144,8 +144,8 @@ const WithTemplateAUDIO: React.FC<WithTemplateAUDIOProps> = ({ title, onBackToFe
                     <Template post={post} />
                 </View>
                 <ScrollShadow LinearGradientComponent={LinearGradient}>
-                    <ScrollView>
-                        <Column className='mt-6 gap-4 pb-10'>
+                    <ScrollView className='h-[60vh]'>
+                        <Column className='mt-6 gap-4 pb-10 mb-30'>
                             <PoppinsText className='text-primary-text text-xl font-bold'>{title}</PoppinsText>
                             
                             <Pressable

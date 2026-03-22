@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "convex/react";
+import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { useEffect, useRef, useState } from "react";
 import { devWarn } from "../utils/devWarnings";
@@ -237,6 +237,7 @@ export function useUserVariable<T>({
     overwriteStoredPrivacy?: boolean;
     onOpStatusChange?: (info: UserVarOpStatusInfo<T>) => void;
 }): [UserVariableResult<T>, (newValue: T) => void] {
+    const { isLoading: isConvexAuthLoading, isAuthenticated: isConvexAuthenticated } = useConvexAuth();
     const record = useQuery(api.user_vars.get, { key });
 
     const isSyncing = record === undefined;
@@ -331,6 +332,10 @@ export function useUserVariable<T>({
     );
 
     const setValue = (newValue: T) => {
+        if (isConvexAuthLoading || !isConvexAuthenticated) {
+            return;
+        }
+
         const startedAt = Date.now();
         const opId = (opIdRef.current += 1);
         const encodedValue = encodeUserValue(newValue);
@@ -456,12 +461,13 @@ export function useUserVariable<T>({
 
     useEffect(() => {
         if (didAutoCreateRef.current) return;
+        if (isConvexAuthLoading || !isConvexAuthenticated) return;
         if (record !== null) return;
         if (defaultValue === undefined) return;
 
         didAutoCreateRef.current = true;
         setValue(defaultValue as T);
-    }, [record, defaultValue]);
+    }, [defaultValue, isConvexAuthLoading, isConvexAuthenticated, record]);
 
     useEffect(() => {
         return () => {
