@@ -5,9 +5,10 @@ import type { AudioPost, ImagePost, TextPost, VideoPost } from '../../types/post
 
 interface TemplatePreviewProps {
     templateType: 'Image' | 'Text' | 'Video' | 'Audio';
+    imageTemplateVersion?: 'collage' | 'slideshow';
 }
 
-const TemplatePreview: React.FC<TemplatePreviewProps> = ({ templateType }) => {
+const TemplatePreview: React.FC<TemplatePreviewProps> = ({ templateType, imageTemplateVersion }) => {
     const imagePost: ImagePost = {
         postTemplate: 'Image',
         TemplateData: {
@@ -16,6 +17,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({ templateType }) => {
             Subtitle: 'Sample subtitle text here',
         },
         writeUpData: 'This is a sample write-up for the project...',
+        imageTemplateVersion: imageTemplateVersion || 'collage',
     };
 
     const textPost: TextPost = {

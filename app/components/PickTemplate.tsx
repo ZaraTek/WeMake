@@ -31,6 +31,11 @@ const PickTemplate: React.FC<PickTemplateProps> = ({
         { type: 'Audio' as const, label: 'Audio Post' },
     ];
 
+    const imageTemplateVariants = [
+        { version: 'collage' as const, label: 'Collage' },
+        { version: 'slideshow' as const, label: 'Slideshow' },
+    ];
+
     // If a template is selected, show the full template view
     if (selectedTemplate) {
         return (
@@ -45,7 +50,7 @@ const PickTemplate: React.FC<PickTemplateProps> = ({
                     <WithTemplateAUDIO title={title} />
                 ) : null}
 
-                <View className='absolute top-0 left-0 p-4'>
+                <View className='absolute top-0 left-0 p-4 z-50'>
                     <AppButton variant='transparent' className='absolute top-4 left-4' onPress={() => setSelectedTemplate(null)}>
                         <PoppinsText className='text-primary-text text-lg font-bold'>{`< Back`}</PoppinsText>
                     </AppButton>
@@ -70,15 +75,33 @@ const PickTemplate: React.FC<PickTemplateProps> = ({
                                             <Column className='w-screen p-4'>
                                                 <PoppinsText className='text-primary-text text-lg font-medium mb-3'>{template.label}</PoppinsText>
                                                 <Row className='w-full justify-between'>
-                                                    <TouchableOpacity
-                                                        onPress={() => setSelectedTemplate(template.type)}
-                                                        className='h-56 w-[48%] items-center justify-center overflow-hidden rounded-xl border border-subtle-border bg-inner-background'
-                                                    >
-                                                        <TemplatePreview templateType={template.type} />
-                                                    </TouchableOpacity>
-                                                    <View className='h-56 w-[48%] items-center justify-center rounded-xl border border-dashed border-subtle-border bg-inner-background/60'>
-                                                        <PoppinsText className='text-muted-text text-base font-medium'>Coming Soon</PoppinsText>
-                                                    </View>
+                                                    {template.type === 'Image' ? (
+                                                        imageTemplateVariants.map((variant) => (
+                                                            <TouchableOpacity
+                                                                key={variant.version}
+                                                                onPress={() => setSelectedTemplate(template.type)}
+                                                                className='h-56 w-[48%] items-center justify-center overflow-hidden rounded-xl border border-subtle-border bg-inner-background'
+                                                            >
+                                                                <View className="touch-none" pointerEvents='none'>
+                                                                    <TemplatePreview templateType={template.type} imageTemplateVersion={variant.version} />
+                                                                </View>
+                                                            </TouchableOpacity>
+                                                        ))
+                                                    ) : (
+                                                        <>
+                                                            <TouchableOpacity
+                                                                onPress={() => setSelectedTemplate(template.type)}
+                                                                className='h-56 w-[48%] items-center justify-center overflow-hidden rounded-xl border border-subtle-border bg-inner-background'
+                                                            >
+                                                                <View className="touch-none" pointerEvents='none'>
+                                                                    <TemplatePreview templateType={template.type} />
+                                                                </View>
+                                                            </TouchableOpacity>
+                                                            <View className='h-56 w-[48%] items-center justify-center rounded-xl border border-dashed border-subtle-border bg-inner-background/60'>
+                                                                <PoppinsText className='text-muted-text text-base font-medium'>Coming Soon</PoppinsText>
+                                                            </View>
+                                                        </>
+                                                    )}
                                                 </Row>
                                             </Column>
                                         </Column>
@@ -91,7 +114,7 @@ const PickTemplate: React.FC<PickTemplateProps> = ({
                 </View>
 
             </View>
-            <View className='absolute top-0 left-0 p-4'>
+            <View className='absolute top-0 left-0 p-4 z-50'>
                 <AppButton variant='transparent' className='absolute top-4 left-4' onPress={onBack}>
                     <PoppinsText className='text-primary-text text-lg font-bold'>{`< Back`}</PoppinsText>
                 </AppButton>

@@ -41,7 +41,12 @@ const Feed = () => {
                                 </PoppinsText> */}
 
                                     {/* <FakeConvexWrapper /> */}
-                                    <Template post={post.value} />
+                                    {post.value.postTemplate === 'Image' && post.value.imageTemplateVersion ? (
+                                        <Template post={post.value} />
+                                    ) : (
+                                        <PoppinsText>NO imageTemplateVersion</PoppinsText>
+                                    )}
+                                    <PoppinsText>{JSON.stringify(post.value)}</PoppinsText>
 
                                 </Column>
                             );
