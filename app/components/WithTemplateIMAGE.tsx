@@ -13,10 +13,12 @@ import AnimatedWrapper from './ui/AnimatedWrapper';
 
 interface WithTemplateIMAGEProps {
     title: string;
+    onBackToFeed?: () => void;
 }
 
 const WithTemplateIMAGE: React.FC<WithTemplateIMAGEProps> = ({
     title,
+    onBackToFeed,
 }) => {
     const [subtitle, setSubtitle] = useState('');
     const [imageUrls, setImageUrls] = useState<string[]>([]);
@@ -66,6 +68,11 @@ const WithTemplateIMAGE: React.FC<WithTemplateIMAGEProps> = ({
         setImageUrls([]);
         setWriteUpData('');
         setCurrentScreen('upload');
+        
+        // Navigate back to Feed
+        if (onBackToFeed) {
+            onBackToFeed();
+        }
     };
 
     const handleNextToDetails = () => {

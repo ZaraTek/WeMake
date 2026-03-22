@@ -43,6 +43,7 @@ const NewPost = ({ onBackToFeed }: NewPostProps) => {
                     <PickTemplate
                         title={title}
                         onBack={handleBack}
+                        onBackToFeed={onBackToFeed}
                     />
                 )}
 

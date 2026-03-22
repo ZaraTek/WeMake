@@ -22,11 +22,11 @@ const WriteUpDialog: React.FC<WriteUpDialogProps> = ({
 }) => {
     return (
         <Dialog isOpen={isOpen} onOpenChange={onOpenChange}>
-            <Dialog.Portal>
+            <Dialog.Portal className='bg-black/50'>
                 <Dialog.Overlay />
                 <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
                     <Dialog.Content className="max-h-[80vh] w-[90vw] max-w-[500px] bg-background">
-                        <Dialog.Close />
+                        <Dialog.Close className='bg-grey'/>
                         <View className="mb-4 gap-2">
                             <Dialog.Title>
                                 <PoppinsText className="text-2xl font-bold">Write Up Content</PoppinsText>
