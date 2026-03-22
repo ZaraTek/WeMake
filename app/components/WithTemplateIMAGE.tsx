@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Dimensions } from 'react-native';
+import { View, Dimensions, TouchableOpacity } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { ScrollShadow } from 'heroui-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -25,6 +25,7 @@ const WithTemplateIMAGE: React.FC<WithTemplateIMAGEProps> = ({
     const [subtitle, setSubtitle] = useState('');
     const [imageUrl, setImageUrl] = useState('');
     const [writeUpData, setWriteUpData] = useState('');
+    const [imageTemplateVersion, setImageTemplateVersion] = useState<'collage' | 'slideshow'>('collage');
     const [dynamicHeight, setDynamicHeight] = useState(384); // h-96 = 24 * 16 = 384px
     const columnRef = useRef<View>(null);
     const setPost = useUserListSet<PostType>();
@@ -57,6 +58,7 @@ const WithTemplateIMAGE: React.FC<WithTemplateIMAGEProps> = ({
             Subtitle: subtitle || undefined,
         },
         writeUpData: writeUpData || undefined,
+        imageTemplateVersion: imageTemplateVersion,
     };
 
     const handleAddPost = () => {
@@ -75,6 +77,7 @@ const WithTemplateIMAGE: React.FC<WithTemplateIMAGEProps> = ({
                     Subtitle: subtitle || undefined,
                 },
                 writeUpData: writeUpData || undefined,
+                imageTemplateVersion: imageTemplateVersion,
             },
             privacy: 'PUBLIC',
             searchKeys: ['title', 'subtitle', 'imageUrl', 'writeUpData'],
@@ -99,6 +102,23 @@ const WithTemplateIMAGE: React.FC<WithTemplateIMAGEProps> = ({
                                 onChangeText={setSubtitle}
                                 placeholder='Subtitle'
                             />
+                            <Column className='gap-2'>
+                                <PoppinsText className='text-primary-text text-base font-medium'>Template Version</PoppinsText>
+                                <Row className='gap-2'>
+                                    <TouchableOpacity
+                                        onPress={() => setImageTemplateVersion('collage')}
+                                        className={`flex-1 p-3 rounded-lg border ${imageTemplateVersion === 'collage' ? 'border-primary bg-primary/20' : 'border-subtle-border bg-inner-background'}`}
+                                    >
+                                        <PoppinsText className={`text-center ${imageTemplateVersion === 'collage' ? 'text-primary' : 'text-muted-text'}`}>Collage</PoppinsText>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        onPress={() => setImageTemplateVersion('slideshow')}
+                                        className={`flex-1 p-3 rounded-lg border ${imageTemplateVersion === 'slideshow' ? 'border-primary bg-primary/20' : 'border-subtle-border bg-inner-background'}`}
+                                    >
+                                        <PoppinsText className={`text-center ${imageTemplateVersion === 'slideshow' ? 'text-primary' : 'text-muted-text'}`}>Slideshow</PoppinsText>
+                                    </TouchableOpacity>
+                                </Row>
+                            </Column>
                             <PublicImageUpload
                                 url={imageUrl}
                                 setUrl={setImageUrl}
