@@ -22,7 +22,7 @@ const Feed = () => {
         <ScrollShadow LinearGradientComponent={LinearGradient}>
             <ScrollView>
                 <View className='overflow-scroll h-full'>
-                    <PoppinsText weight='medium' color='white'>Feed</PoppinsText>
+                    
                     <Column>
                         {posts?.map((post: any, index: number) => {
                             const text = post?.value?.text ?? 'NO TEXT';

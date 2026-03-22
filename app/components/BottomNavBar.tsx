@@ -21,10 +21,11 @@ const BottomNavBar: React.FC<BottomNavBarProps> = ({
     setActivePage,
 }) => {
     return (
-        <Row className='z-10 absolute bottom-0 left-0 right-0 items-center justify-center rounded justify-between mx-6'>
-            <View className='overflow-hidden rounded-2xl shadow-lg shadow-black/30'>
-                <BlurView intensity={20} tint='dark' className='w-min px-3 p-1 rounded-2xl'>
-                    <Row gap={3}>
+        <Row className='z-10 absolute bottom-0 left-0 right-0 items-center rounded justify-between mx-6'>
+            <View className='overflow-hidden rounded-2xl shadow-black/30 shadow-2xl'>
+                <View className='bg-slate-700/30'>
+                    <BlurView intensity={20} className='w-min px-3 p-1 rounded-2xl'>
+                        <Row gap={3}>
                         <AppButton variant='transparent' className='w-12 h-12' onPress={() => setActivePage("feed")} selected={activePage === "feed"}>
                             <Column gap={0} className='justify-center items-center'>
                                 <FeedIcon size={20}/>
@@ -39,18 +40,21 @@ const BottomNavBar: React.FC<BottomNavBarProps> = ({
                         </AppButton>
                     </Row>
                 </BlurView>
+                </View>
             </View>
             <View className='overflow-hidden rounded-2xl shadow-lg shadow-black/30'>
-                <BlurView intensity={20} tint='dark' className='w-min rounded-2xl'>
-                    <Row gap={3}>
+                <View className='bg-slate-700/60'>
+                    <BlurView intensity={20} className='w-min rounded-2xl'>
+                        <Row gap={3}>
                         <AppButton variant='primary' className='w-30 h-12 shadow-md shadow-black/20' onPress={() => setActivePage("newPost")} selected={activePage === "newPost"}>
                             <Row gap={2} className='justify-center items-center'>
                                 <NewPostIcon />
                                 <PoppinsText weight='medium' color='white'>New Post</PoppinsText>
                             </Row>
                         </AppButton>
-                    </Row>
-                </BlurView>
+                        </Row>
+                    </BlurView>
+                </View>
             </View>
         </Row>
     );
