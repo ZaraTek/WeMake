@@ -19,10 +19,10 @@ const FakePostView = () => {
     
 
     const comments:Comments = [
-        {body:"hi", postId:"1234"}
+        {body:"hi", postId:"1234", userId:"fakeUserId"}
     ]
     
-    return <PostView post={post} comments={comments} userId={"userId"} />
+    return <PostView post={post} comments={comments} userId={"userId"} postId={"1234"} onAddComment={(text) => console.log("Fake comment:", text)} />
 }
 
 export default FakePostView

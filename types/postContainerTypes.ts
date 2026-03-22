@@ -5,6 +5,7 @@ export type Comments = Comment[]
 
 export type Comment = {
     body: string,
-    postId: string
+    postId: string,
+    userId?: string,
 }
 
