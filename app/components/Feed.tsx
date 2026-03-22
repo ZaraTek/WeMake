@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { View, Text, Dimensions } from 'react-native';
 import Animated, {
     useSharedValue,
     useAnimatedScrollHandler,
+    useAnimatedReaction,
     useAnimatedStyle,
     interpolate,
-    Extrapolate
+    Extrapolate,
+    runOnJS
 } from 'react-native-reanimated';
 import { ScrollView } from 'react-native-gesture-handler';
 import { ScrollShadow } from 'heroui-native';
@@ -22,11 +24,12 @@ import Column from './layout/Column';
 interface AnimatedPostProps {
     post: any;
     index: number;
+    activeIndex: number;
     scrollX: any;
     screenWidth: number;
 }
 
-const AnimatedPost = ({ post, index, scrollX, screenWidth }: AnimatedPostProps) => {
+const AnimatedPost = memo(({ post, index, activeIndex, scrollX, screenWidth }: AnimatedPostProps) => {
     const text = post?.value?.text ?? 'NO TEXT';
     const postId = post?.id ?? '?';
     const userId = post?.userToken ?? '??';
@@ -76,18 +79,22 @@ const AnimatedPost = ({ post, index, scrollX, screenWidth }: AnimatedPostProps) 
 
         return {
             transform: [{ scale }, { translateX }],
-            opacity,
-            zIndex: interpolate(
-                scrollX.value,
-                inputRange,
-                [1, 1, 10, 1, 1], // Center post gets zIndex 10, others get zIndex 1
-                Extrapolate.CLAMP
-            )
+            opacity
         };
     });
 
     return (
-        <Animated.View key={index} className='w-screen' style={animatedStyle}>
+        <Animated.View 
+            className='w-screen'
+            style={[
+                animatedStyle,
+                {
+                    position: 'relative',
+                    zIndex: activeIndex === index ? 10 : 1,
+                    elevation: activeIndex === index ? 10 : 1,
+                }
+            ]}
+        >
             <Column className='w-full h-full'>
                 {/* <PoppinsText style={{ fontSize: 12, color: '#666' }} weight='medium' color='white'>
                 User: {userId}
@@ -114,20 +121,43 @@ const AnimatedPost = ({ post, index, scrollX, screenWidth }: AnimatedPostProps) 
             </Column>
         </Animated.View>
     );
-};
+});
 
 
-const Feed = () => {
+const Feed = memo(() => {
     const { width: screenWidth } = Dimensions.get('window');
     const scrollX = useSharedValue(0);
+    const [activeIndex, setActiveIndex] = useState(0);
     const posts = useUserListGet<PostType>({
         key: "posts",
         // userIds: [], // Get all posts for now
     });
+    const postCount = posts?.length ?? 0;
 
     const scrollHandler = useAnimatedScrollHandler((event) => {
         scrollX.value = event.contentOffset.x;
     });
+
+    const updateActiveIndex = useCallback((nextIndex: number) => {
+        setActiveIndex((currentIndex) => currentIndex === nextIndex ? currentIndex : nextIndex);
+    }, []);
+
+    useAnimatedReaction(
+        () => {
+            if (postCount <= 0) {
+                return 0;
+            }
+
+            const rawIndex = Math.round(scrollX.value / screenWidth);
+            return Math.max(0, Math.min(postCount - 1, rawIndex));
+        },
+        (nextIndex, previousIndex) => {
+            if (nextIndex !== previousIndex) {
+                runOnJS(updateActiveIndex)(nextIndex);
+            }
+        },
+        [postCount, screenWidth]
+    );
 
     return (
         // <ScrollShadow LinearGradientComponent={LinearGradient}>
@@ -140,14 +170,15 @@ const Feed = () => {
                 onScroll={scrollHandler}
                 scrollEventThrottle={16}
             >
-                <View className='overflow-scroll h-full'>
+                <View className='h-full' style={{ overflow: 'visible' }}>
                     
-                    <Row gap={0}>
+                    <Row gap={0} className='overflow-visible'>
                         {posts?.map((post: any, index: number) => (
                             <AnimatedPost 
                                 key={index}
                                 post={post}
                                 index={index}
+                                activeIndex={activeIndex}
                                 scrollX={scrollX}
                                 screenWidth={screenWidth}
                             />
@@ -157,6 +188,6 @@ const Feed = () => {
             </Animated.ScrollView>
         // </ScrollShadow>
     );
-};
+});
 
 export default Feed;
