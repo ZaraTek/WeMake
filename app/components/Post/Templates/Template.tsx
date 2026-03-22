@@ -2,7 +2,8 @@ import React from "react";
 import { Image, Text } from "react-native";
 import type { PostType } from "../../../../types/postTypes";
 import AudioTemplate from "./AudioTemplate";
-import ImageTemplate from "./ImageTemplate";
+import ImageTemplateCollage from "./ImageTemplateCollage";
+import ImageTemplateSlideshow from "./ImageTemplateSlideshow";
 import VideoTemplate from "./VideoTemplate";
 import TextTemplate from "./TextTemplate";
 
@@ -16,7 +17,13 @@ const Template = ({ post }: TemplateProps) => {
   }
 
   if (post.postTemplate === "Image") {
-    return <ImageTemplate post={post} />;
+    if (post.imageTemplateVersion === "collage") {
+      return <ImageTemplateCollage post={post} />;
+    }
+    if (post.imageTemplateVersion === "slideshow") {
+      return <ImageTemplateSlideshow post={post} />;
+    }
+    
   }
 
   if (post.postTemplate === "Video") {

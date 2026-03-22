@@ -29,6 +29,7 @@ export type ImagePost = {
   postTemplate: "Image";
   TemplateData: ImageTemplateData;
   writeUpData?: string;
+  imageTemplateVersion: "collage" | "slideshow";
 };
 
 export type AudioPost = {
@@ -48,5 +49,6 @@ export type VideoPost = {
   TemplateData: VideoTemplateData;
   writeUpData?: string;
 };
+
 
 export type PostType = ImagePost | AudioPost | TextPost | VideoPost;

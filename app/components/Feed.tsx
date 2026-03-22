@@ -5,7 +5,7 @@ import { ScrollShadow } from 'heroui-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useUserListGet } from '../../hooks/useUserListGet';
 import PoppinsText from './ui/text/PoppinsText';
-import FakeConvexWrapper from './Post/FakeConvexWrapper';
+import FakeConvexWrapper from './Post/FakeImageCollageWrapper';
 import { PostType } from 'types/postTypes';
 import Template from './Post/Templates/Template';
 import Row from './layout/Row';
