@@ -140,9 +140,11 @@ const TextTemplate = ({ post }: TextTemplateProps) => {
               {post.TemplateData.Title}
             </Text>
 
-            <Text className="mt-1 text-base text-muted-text">
-              {post.TemplateData.Subtitle}
-            </Text>
+            {post.TemplateData.Subtitle && (
+              <Text className="mt-1 text-base text-muted-text">
+                {post.TemplateData.Subtitle}
+              </Text>
+            )}
           </View>
 
           <Animated.Image

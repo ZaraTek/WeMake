@@ -46,9 +46,11 @@ const VideoTemplate = ({ post }: VideoTemplateProps) => {
         <Text className="text-2xl font-bold text-primary-accent">
           {post.TemplateData.Title}
         </Text>
-        <Text className="mt-1 text-base text-muted-text">
-          {post.TemplateData.Subtitle}
-        </Text>
+        {post.TemplateData.Subtitle && (
+          <Text className="mt-1 text-base text-muted-text">
+            {post.TemplateData.Subtitle}
+          </Text>
+        )}
         <View className="w-[50vw] h-[30vw]" style={{ marginBottom: 24 }}>
         <Pressable
           onPress={() => {

@@ -249,9 +249,11 @@ const AudioTemplate = ({ post }: AudioTemplateProps) => {
             <Text className="text-2xl font-bold text-primary-accent">
               {post.TemplateData.Title}
             </Text>
-            <Text className="mt-1 text-base text-muted-text">
-              {post.TemplateData.Subtitle}
-            </Text>
+            {post.TemplateData.Subtitle && (
+              <Text className="mt-1 text-base text-muted-text">
+                {post.TemplateData.Subtitle}
+              </Text>
+            )}
           </View>
         </View>
         <PostAudioPlayer uri={post.TemplateData.AudioUrl} />
