@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import type { ProfileData } from "../../types/profile";
 import { Edit } from "lucide-react-native";
@@ -21,63 +21,24 @@ const ProfileHeader = ({
   height = 80
 }: ProfileHeaderProps) => {
   const fallbackBanner = "https://via.placeholder.com/800x450/4A148C/FFFFFF?text=Banner";
-  const fallbackPfp = "https://via.placeholder.com/100x100/4A148C/FFFFFF?text=PFP";
   const fallbackUsername = "User";
-  
-  const [bannerLoaded, setBannerLoaded] = useState(false);
-  const [pfpLoaded, setPfpLoaded] = useState(false);
-  const [lastBannerUrl, setLastBannerUrl] = useState('');
-  const [lastPfpUrl, setLastPfpUrl] = useState('');
-  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
-  
-  // Check if both images are loaded AND we've completed at least one load cycle
-  const imagesLoaded = bannerLoaded && pfpLoaded && hasLoadedOnce;
-  
-  // Reset loading state when URLs change
-  useEffect(() => {
-    const currentBannerUrl = profileData?.bannerUrl || fallbackBanner;
-    if (currentBannerUrl !== lastBannerUrl) {
-      setBannerLoaded(false);
-      setHasLoadedOnce(false);
-      setLastBannerUrl(currentBannerUrl);
-    }
-  }, [profileData?.bannerUrl, lastBannerUrl, fallbackBanner]);
-  
-  useEffect(() => {
-    const currentPfpUrl = profileData?.pfpUrl || fallbackPfp;
-    if (currentPfpUrl !== lastPfpUrl) {
-      setPfpLoaded(false);
-      setHasLoadedOnce(false);
-      setLastPfpUrl(currentPfpUrl);
-    }
-  }, [profileData?.pfpUrl, lastPfpUrl, fallbackPfp]);
+
+  const resolvedPfpUrl = profileData?.pfpUrl?.trim() || "";
+  const displayName = profileData?.name?.trim() || profileData?.username || fallbackUsername;
+  const profileInitial = displayName.charAt(0).toUpperCase();
 
   return (
     <View 
       className={`w-full bg-inner-background overflow-hidden mb-4 pt-0 -mt-16 ${className}`}
-      
     >
       {/* Banner + overlay content */}
       <View className="w-full">
         <Image
           source={{ uri: profileData?.bannerUrl || fallbackBanner }}
-          // className="w-full"
           style={{ height, aspectRatio: 16 / 9 }}
           resizeMode="cover"
-          onLoad={() => {
-            setBannerLoaded(true);
-            if (pfpLoaded) {
-              setHasLoadedOnce(true);
-            }
-          }}
-          onError={() => {
-            setBannerLoaded(true);
-            if (pfpLoaded) {
-              setHasLoadedOnce(true);
-            }
-          }} // Consider fallback as "loaded"
         />
-        {showEditButtons && imagesLoaded && (
+        {showEditButtons && (
           <TouchableOpacity
             onPress={onEditBanner}
             className="absolute bottom-2 right-2 bg-black/50 p-2 rounded-full z-50"
@@ -90,23 +51,20 @@ const ProfileHeader = ({
         {/* Avatar + Info overlaid on banner */}
         <View className="absolute bottom-0 left-0 right-0 px-4 pb-3 flex-row items-end">
           <View className="relative">
-            <Image
-              source={{ uri: profileData?.pfpUrl || fallbackPfp }}
-              style={{ width: 100, height: 100, borderRadius: 50, borderWidth: 3, borderColor: "#A082FF" }}
-              onLoad={() => {
-                setPfpLoaded(true);
-                if (bannerLoaded) {
-                  setHasLoadedOnce(true);
-                }
-              }}
-              onError={() => {
-                setPfpLoaded(true);
-                if (bannerLoaded) {
-                  setHasLoadedOnce(true);
-                }
-              }} // Consider fallback as "loaded"
-            />
-            {showEditButtons && imagesLoaded && (
+            {resolvedPfpUrl ? (
+              <Image
+                source={{ uri: resolvedPfpUrl }}
+                style={{ width: 100, height: 100, borderRadius: 50, borderWidth: 3, borderColor: "#A082FF" }}
+              />
+            ) : (
+              <View
+                style={{ width: 100, height: 100, borderRadius: 50, borderWidth: 3, borderColor: "#A082FF" }}
+                className="bg-gray-500 items-center justify-center"
+              >
+                <Text className="text-white text-4xl font-semibold">{profileInitial}</Text>
+              </View>
+            )}
+            {showEditButtons && (
               <TouchableOpacity
                 onPress={onEditPfp}
                 className="absolute bottom-0 right-0 bg-black/50 p-1.5 rounded-full z-50"

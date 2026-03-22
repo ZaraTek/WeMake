@@ -69,10 +69,10 @@ const PostTopRow = ({ postId, userId }: PostTopRowProps) => {
 
             <Pressable
                 onPress={isLiked ? removeLike : addLike}
-                className={`rounded-lg w-18 items-center py-2 ${isLiked ? 'bg-red-500' : 'bg-none'} border-2 border-red-500`}
+                className={`rounded-lg w-18 items-center py-2 ${isLiked ? 'bg-border' : 'bg-none'} border-2 border-border`}
             >
-                <Text className="text-sm font-semibold text-white">
-                    {isLiked ? '❤️' : '🤍'} {formatLikeCount(likeCount)}
+                <Text className={`text-sm font-semibold ${isLiked ? 'text-black' : 'text-border'}`}>
+                    {isLiked ? '♥️' : '🤍'} {formatLikeCount(likeCount)}
                 </Text>
             </Pressable>
         </View>

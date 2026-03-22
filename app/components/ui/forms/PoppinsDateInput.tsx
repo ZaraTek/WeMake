@@ -273,8 +273,8 @@ const PoppinsDateInput = ({
     return (
         <View className="w-full">
             <TextInput 
-                className={`${className} focus:outline-none rounded ${showError ? 'border-red-500' : ''}`}
-                style={{ fontFamily: fontsLoaded ? getFontFamily() : undefined, color: 'text', ...style }}
+                className={`${className} focus:outline-none rounded ${showError ? 'border-red-500' : ''} text-text`}
+                style={{ fontFamily: fontsLoaded ? getFontFamily() : undefined, ...style }}
                 placeholderTextColor="#9CA3AF"
                 value={getDisplayValue(inputValue)}
                 onChangeText={handleChangeText}

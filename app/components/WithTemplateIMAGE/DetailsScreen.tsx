@@ -1,17 +1,13 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, Pressable, Text, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import { ScrollShadow } from 'heroui-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import PoppinsTextInput from '../ui/forms/PoppinsTextInput';
+import { View, Pressable } from 'react-native';
 import AppButton from '../ui/buttons/AppButton';
 import StatusButton from '../ui/StatusButton';
 import PoppinsText from '../ui/text/PoppinsText';
 import Column from '../layout/Column';
-import Row from '../layout/Row';
+import DateFieldDialog from '../ui/dialog/DateFieldDialog';
+import TextFieldDialog from '../ui/dialog/TextFieldDialog';
 import WriteUpDialog from '../ui/dialog/WriteUpDialog';
 import AnimatedWrapper from '../ui/AnimatedWrapper';
-import { Dialog } from 'heroui-native';
 
 interface DetailsScreenProps {
     title: string;
@@ -19,6 +15,8 @@ interface DetailsScreenProps {
     setSubtitle: (subtitle: string) => void;
     writeUpData: string;
     setWriteUpData: (writeUp: string) => void;
+    profileDate: string;
+    setProfileDate: (date: string) => void;
     imageTemplateVersion: 'collage' | 'slideshow';
     onTemplateVersionChange: (version: 'collage' | 'slideshow') => void;
     onCreatePost: () => void;
@@ -27,19 +25,19 @@ interface DetailsScreenProps {
 }
 
 const DetailsScreen: React.FC<DetailsScreenProps> = ({
-    title,
     subtitle,
     setSubtitle,
     writeUpData,
     setWriteUpData,
-    imageTemplateVersion,
-    onTemplateVersionChange,
+    profileDate,
+    setProfileDate,
     onCreatePost,
     onBack,
     isValid,
 }) => {
     const [isWriteUpDialogOpen, setIsWriteUpDialogOpen] = useState(false);
     const [isSubtitleDialogOpen, setIsSubtitleDialogOpen] = useState(false);
+    const [isProfileDateDialogOpen, setIsProfileDateDialogOpen] = useState(false);
 
     const handleOpenWriteUpDialog = () => {
         setIsWriteUpDialogOpen(true);
@@ -57,17 +55,12 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({
         setIsSubtitleDialogOpen(false);
     };
 
-    const handleSubtitlePost = () => {
-        setIsSubtitleDialogOpen(false);
+    const handleOpenProfileDateDialog = () => {
+        setIsProfileDateDialogOpen(true);
     };
 
-    // Calculate dynamic height based on content
-    const getWriteUpInputHeight = () => {
-        const lines = writeUpData.split('\n').length;
-        const baseHeight = 40;
-        const lineHeight = 20;
-        const maxHeight = 120;
-        return Math.min(baseHeight + (lines - 1) * lineHeight, maxHeight);
+    const handleCloseProfileDateDialog = () => {
+        setIsProfileDateDialogOpen(false);
     };
 
     const getSubtitleInputHeight = () => {
@@ -95,6 +88,16 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({
                         >
                             <PoppinsText className='text-muted-text'>
                                 {subtitle.trim() ? subtitle : 'Subtitle (optional)'}
+                            </PoppinsText>
+                        </Pressable>
+
+                        <Pressable
+                            onPress={handleOpenProfileDateDialog}
+                            className='p-4 border border-subtle-border rounded-lg bg-inner-background'
+                            style={{ backgroundColor: 'rgba(0, 0, 0, 0.25)' }}
+                        >
+                            <PoppinsText className='text-muted-text'>
+                                {profileDate.trim() ? profileDate : 'Project Date'}
                             </PoppinsText>
                         </Pressable>
 
@@ -150,37 +153,23 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({
                 onChangeText={setWriteUpData}
                 placeholder='Write up content for your image post'
             />
-            
-            <Dialog isOpen={isSubtitleDialogOpen} onOpenChange={handleCloseSubtitleDialog}>
-                <Dialog.Portal className='bg-black/50'>
-                    <Dialog.Overlay />
-                    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-                        <Dialog.Content className="w-[90vw] max-w-[500px] bg-background">
-                            <Dialog.Close className='bg-grey' />
-                            <View className="flex-row items-center gap-2">
-                                <TextInput
-                                    ref={(input) => {
-                                        if (input && isSubtitleDialogOpen) {
-                                            setTimeout(() => input.focus(), 100);
-                                        }
-                                    }}
-                                    value={subtitle}
-                                    onChangeText={setSubtitle}
-                                    placeholder='Subtitle (optional)'
-                                    className="flex-1 rounded-lg border border-subtle-border bg-inner-background px-3 py-2 text-text"
-                                    style={{ height: getSubtitleInputHeight() }}
-                                />
-                                <Pressable
-                                    onPress={handleSubtitlePost}
-                                    className="rounded-lg bg-blue-500 px-4 py-2"
-                                >
-                                    <Text className="text-white font-semibold">Post</Text>
-                                </Pressable>
-                            </View>
-                        </Dialog.Content>
-                    </KeyboardAvoidingView>
-                </Dialog.Portal>
-            </Dialog>
+
+            <TextFieldDialog
+                isOpen={isSubtitleDialogOpen}
+                onOpenChange={handleCloseSubtitleDialog}
+                value={subtitle}
+                onChangeText={setSubtitle}
+                placeholder='Subtitle (optional)'
+                inputHeight={getSubtitleInputHeight()}
+            />
+
+            <DateFieldDialog
+                isOpen={isProfileDateDialogOpen}
+                onOpenChange={handleCloseProfileDateDialog}
+                value={profileDate}
+                onChangeText={setProfileDate}
+                placeholder='Project Date'
+            />
         </>
     );
 };

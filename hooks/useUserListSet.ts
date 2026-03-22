@@ -1,4 +1,5 @@
 import { useMutation } from "convex/react";
+import { useConvexAuth } from "convex/react";
 import { api } from "../convex/_generated/api";
 import type { Privacy } from "./useUserList";
 import { encodeUserValue } from "./userValueSerialization";
@@ -59,6 +60,8 @@ type ObjectKeys<T> = T extends object ? Extract<keyof T, string> : never;
  */
 export function useUserListSet<T = any>() {
   const mutation = useMutation(api.user_lists.set);
+  const { isLoading: isConvexAuthLoading, isAuthenticated: isConvexAuthenticated } =
+    useConvexAuth();
 
   /**
    * Upsert one list item by key + itemId.
@@ -137,6 +140,10 @@ export function useUserListSet<T = any>() {
       ? { allowList: privacy }
       : privacy;
     const encodedValue = encodeUserValue(value);
+
+    if (isConvexAuthLoading || !isConvexAuthenticated) {
+      return Promise.resolve(undefined);
+    }
 
     return mutation({
       key,

@@ -41,7 +41,7 @@ const PostView = ({ post, comments, userId, postId, onAddComment }: PostViewProp
 
     return (
         <>
-            <ScrollView className="mx-4">
+            <View className="mx-4">
                 <Template post={post} />
                 {post.writeUpData && post.writeUpData.trim() !== "" && (
                     <TextInput
@@ -72,14 +72,20 @@ const PostView = ({ post, comments, userId, postId, onAddComment }: PostViewProp
                         <Text className="text-sm text-muted-text">No comments yet.</Text>
                     ) : (
                         comments.map((comment: Comment, index: number) => (
-                            <CommentRow 
+                            <CommentRow
                                 key={`${comment.postId}-${index}`}
                                 comment={comment}
                             />
                         ))
                     )}
                 </View>
-            </ScrollView>
+                <PoppinsText
+                    className='text-center mt-2 text-xs text-muted-text'
+                    weight='medium'
+                >
+                    {post.TemplateData?.profileDate || 'NO DATE'}
+                </PoppinsText>
+            </View>
 
             <Dialog isOpen={isCommentDialogOpen} onOpenChange={setIsCommentDialogOpen}>
                 <Dialog.Portal className='bg-black/50'>

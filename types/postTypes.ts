@@ -3,6 +3,7 @@ export type ImageTemplateData = {
   Title: string;
   Subtitle?: string;
   backgroundUrl?: string;
+  profileDate: string;
 };
 
 export type AudioTemplateData = {
@@ -10,6 +11,7 @@ export type AudioTemplateData = {
   CoverImageUrl?: string;
   Title: string;
   Subtitle?: string;
+  profileDate: string;
 };
 
 export type TextTemplateData = {
@@ -17,6 +19,7 @@ export type TextTemplateData = {
   Subtitle?: string;
   Highlight: string;
   backgroundUrl?: string;
+  profileDate: string;
 };
 
 export type VideoTemplateData = {
@@ -25,6 +28,7 @@ export type VideoTemplateData = {
   Title: string;
   Subtitle?: string;
   PreviewUrl: string;
+  profileDate: string;
 };
 
 export type ImagePost = {

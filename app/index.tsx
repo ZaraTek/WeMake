@@ -2,6 +2,7 @@ import { Platform, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useEffect, useState } from "react";
 import { SignedIn, SignedOut, useOAuth, useUser } from "@clerk/clerk-expo";
+import { useConvexAuth } from "convex/react";
 import * as WebBrowser from "expo-web-browser";
 
 import AuthButton from "./components/ui/buttons/AuthButton";
@@ -20,6 +21,16 @@ const useWarmUpBrowser = () => {
 
 WebBrowser.maybeCompleteAuthSession();
 
+function SignedInApp() {
+  const { isLoading, isAuthenticated } = useConvexAuth();
+
+  if (isLoading || !isAuthenticated) {
+    return null;
+  }
+
+  return <MainPage />;
+}
+
 // ============================================================================
 // MAIN APP COMPONENT
 // ============================================================================
@@ -36,7 +47,7 @@ export default function HomeScreen() {
       <SafeAreaView className="flex-1">
         <View className="w-full h-full items-center justify-center">
           <SignedIn>
-            <MainPage />
+            <SignedInApp />
           </SignedIn>
 
           <SignedOut>

@@ -2,12 +2,36 @@ import React from 'react';
 import { Dialog } from 'heroui-native/dialog';
 import { ConvexReactClient } from 'convex/react';
 import { ConvexProvider } from 'convex/react';
+import { ConvexProviderWithClerk } from 'convex/react-clerk';
+import cn from '../../../lib/utils';
 
-// Create a singleton Convex client for all dialogs
 const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!);
 
-// Wrapper component that provides Convex context to Dialog content
-const ConvexDialogContent = ({ children }: { children: React.ReactNode }) => {
+type ClerkAuthSnapshot = {
+    isLoaded: boolean;
+    isSignedIn: boolean | undefined;
+    getToken: (options: { template?: 'convex'; skipCache?: boolean }) => Promise<string | null>;
+    orgId: string | undefined | null;
+    orgRole: string | undefined | null;
+};
+
+const ConvexDialogContent = ({
+    children,
+    auth,
+}: {
+    children: React.ReactNode;
+    auth?: ClerkAuthSnapshot;
+}) => {
+    if (auth) {
+        const useCapturedAuth = () => auth;
+
+        return (
+            <ConvexProviderWithClerk client={convex} useAuth={useCapturedAuth}>
+                {children}
+            </ConvexProviderWithClerk>
+        );
+    }
+
     return (
         <ConvexProvider client={convex}>
             {children}
@@ -15,7 +39,6 @@ const ConvexDialogContent = ({ children }: { children: React.ReactNode }) => {
     );
 };
 
-// Enhanced Dialog components with Convex context
 const ConvexDialog = {
     Root: Dialog,
     Trigger: Dialog.Trigger,
@@ -23,9 +46,9 @@ const ConvexDialog = {
     Overlay: ({ className, ...props }: any) => (
         <Dialog.Overlay className="bg-black/20" {...props} />
     ),
-    Content: ({ children, className, ...props }: any) => (
-        <ConvexDialogContent>
-            <Dialog.Content className="bg-background rounded border-2 border-border max-w-2xl w-full mx-auto" {...props}>
+    Content: ({ children, className, auth, ...props }: any) => (
+        <ConvexDialogContent auth={auth}>
+            <Dialog.Content className={cn("bg-background rounded border border-subtle-border max-w-2xl w-full mx-auto", className)} {...props}>
                 {children}
             </Dialog.Content>
         </ConvexDialogContent>

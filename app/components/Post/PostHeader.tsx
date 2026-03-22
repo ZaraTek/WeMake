@@ -96,7 +96,7 @@ const PostHeader = ({ postId, userId }: PostHeaderProps) => {
                     className={`rounded-lg w-18 items-center py-2 ${isLiked ? 'bg-red-500' : 'bg-none'} border-2 border-red-500`}
                 >
                     <Text className="text-sm font-semibold text-white">
-                        {isLiked ? '❤️' : '🤍'} {formatLikeCount(likeCount)}
+                        {isLiked ? '♥️' : '🤍'} {formatLikeCount(likeCount)}
                     </Text>
                 </Pressable>
             </View>

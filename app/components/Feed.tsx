@@ -13,6 +13,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { ScrollShadow } from 'heroui-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useUserListGet } from '../../hooks/useUserListGet';
+import { useUserVariable } from '../../hooks/useUserVariable';
 import PoppinsText from './ui/text/PoppinsText';
 import FakeConvexWrapper from './Post/FakeImageCollageWrapper';
 import { PostType } from 'types/postTypes';
@@ -33,11 +34,11 @@ const AnimatedPost = memo(({ post, index, activeIndex, scrollX, screenWidth }: A
     const text = post?.value?.text ?? 'NO TEXT';
     const postId = post?.id ?? '?';
     const userId = post?.userToken ?? '??';
-    
+
     // DIAL THIS IN: Translation factors for different scroll positions
     const NEAR_TRANSLATION = 0.25; // When close to active post
     const FAR_TRANSLATION = 0.2;   // When in middle of scroll transition
-    
+
     const animatedStyle = useAnimatedStyle(() => {
         const inputRange = [
             (index - 1) * screenWidth,
@@ -84,7 +85,7 @@ const AnimatedPost = memo(({ post, index, activeIndex, scrollX, screenWidth }: A
     });
 
     return (
-        <Animated.View 
+        <Animated.View
             className='w-screen'
             style={[
                 animatedStyle,
@@ -95,7 +96,7 @@ const AnimatedPost = memo(({ post, index, activeIndex, scrollX, screenWidth }: A
                 }
             ]}
         >
-            <Column className='w-full h-full'>
+            <Column className='w-full h-full mt-22 mb-24'>
                 {/* <PoppinsText style={{ fontSize: 12, color: '#666' }} weight='medium' color='white'>
                 User: {userId}
             </PoppinsText>
@@ -114,8 +115,15 @@ const AnimatedPost = memo(({ post, index, activeIndex, scrollX, screenWidth }: A
                     </>
                 ) : (
                     <>
-                        <PostTopRow postId={postId} userId={userId} />
-                        <PostWrapper post={post.value} postId={postId} userId={userId} />
+                        <ScrollShadow LinearGradientComponent={LinearGradient}>
+                            <ScrollView className='max-h-[80vh] b-10'>
+                                <Column>
+                                    <PostTopRow postId={postId} userId={userId} />
+                                    <PostWrapper post={post.value} postId={postId} userId={userId} />
+                                    <View className='h-20' />
+                                </Column>
+                            </ScrollView>
+                        </ScrollShadow>
                     </>
                 )}
             </Column>
@@ -128,9 +136,15 @@ const Feed = memo(() => {
     const { width: screenWidth } = Dimensions.get('window');
     const scrollX = useSharedValue(0);
     const [activeIndex, setActiveIndex] = useState(0);
+    const [friendsRecord] = useUserVariable<string[]>({
+        key: 'friends',
+        defaultValue: [],
+        privacy: 'PRIVATE',
+    });
+    const friendIds = Array.from(new Set((friendsRecord.value ?? []).filter(Boolean)));
     const posts = useUserListGet<PostType>({
         key: "posts",
-        // userIds: [], // Get all posts for now
+        userIds: friendIds,
     });
     const postCount = posts?.length ?? 0;
 
@@ -160,8 +174,17 @@ const Feed = memo(() => {
     );
 
     return (
-        // <ScrollShadow LinearGradientComponent={LinearGradient}>
-            <Animated.ScrollView 
+        (postCount === 0 && posts !== undefined) ? (
+            <View className='mt-50 items-center justify-center px-8'>
+                <Column className='items-center rounded-[32px] border border-dashed border-border bg-inner-background/80 px-6 py-8' gap={2}>
+                    <PoppinsText weight='bold' color='white'>Add some friends!</PoppinsText>
+                    <PoppinsText varient='subtext' color='white' style={{ textAlign: 'center' }}>
+                        Search for interesting people, follow them, and let your feed sparkle.
+                    </PoppinsText>
+                </Column>
+            </View>
+        ) : (
+            <Animated.ScrollView
                 horizontal={true}
                 snapToInterval={screenWidth}
                 snapToAlignment="center"
@@ -171,10 +194,10 @@ const Feed = memo(() => {
                 scrollEventThrottle={16}
             >
                 <View className='h-full' style={{ overflow: 'visible' }}>
-                    
+
                     <Row gap={0} className='overflow-visible'>
                         {posts?.map((post: any, index: number) => (
-                            <AnimatedPost 
+                            <AnimatedPost
                                 key={index}
                                 post={post}
                                 index={index}
@@ -186,7 +209,7 @@ const Feed = memo(() => {
                     </Row>
                 </View>
             </Animated.ScrollView>
-        // </ScrollShadow>
+        )
     );
 });
 

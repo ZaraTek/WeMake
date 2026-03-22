@@ -6,11 +6,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useUserListSet } from '../../hooks/useUserListSet';
 import type { PostType, TextPost } from '../../types/postTypes';
 import Template from './Post/Templates/Template';
-import PoppinsTextInput from './ui/forms/PoppinsTextInput';
 import AppButton from './ui/buttons/AppButton';
 import StatusButton from './ui/StatusButton';
 import PoppinsText from './ui/text/PoppinsText';
 import Column from './layout/Column';
+import DateFieldDialog from './ui/dialog/DateFieldDialog';
+import TextFieldDialog from './ui/dialog/TextFieldDialog';
 import WriteUpDialog from './ui/dialog/WriteUpDialog';
 import AnimatedWrapper from './ui/AnimatedWrapper';
 
@@ -23,8 +24,18 @@ const WithTemplateTEXT: React.FC<WithTemplateTEXTProps> = ({ title, onBackToFeed
     const [subtitle, setSubtitle] = useState('');
     const [highlight, setHighlight] = useState('');
     const [writeUpData, setWriteUpData] = useState('');
+    const [isSubtitleDialogOpen, setIsSubtitleDialogOpen] = useState(false);
+    const [isHighlightDialogOpen, setIsHighlightDialogOpen] = useState(false);
     const [isWriteUpDialogOpen, setIsWriteUpDialogOpen] = useState(false);
+    const [isProfileDateDialogOpen, setIsProfileDateDialogOpen] = useState(false);
     const [navigationDirection, setNavigationDirection] = useState<'forward' | 'backward'>('forward');
+    const [profileDate, setProfileDate] = useState(() => {
+        const today = new Date();
+        const month = (today.getMonth() + 1).toString().padStart(2, '0');
+        const day = today.getDate().toString().padStart(2, '0');
+        const year = today.getFullYear();
+        return `${month}/${day}/${year}`;
+    });
     const setPost = useUserListSet<PostType>();
 
     const isValid = title.trim().length > 0 && highlight.trim().length > 0;
@@ -34,9 +45,55 @@ const WithTemplateTEXT: React.FC<WithTemplateTEXTProps> = ({ title, onBackToFeed
         setIsWriteUpDialogOpen(true);
     };
 
+    const handleOpenSubtitleDialog = () => {
+        setNavigationDirection('forward');
+        setIsSubtitleDialogOpen(true);
+    };
+
+    const handleCloseSubtitleDialog = () => {
+        setNavigationDirection('backward');
+        setIsSubtitleDialogOpen(false);
+    };
+
+    const handleOpenHighlightDialog = () => {
+        setNavigationDirection('forward');
+        setIsHighlightDialogOpen(true);
+    };
+
+    const handleCloseHighlightDialog = () => {
+        setNavigationDirection('backward');
+        setIsHighlightDialogOpen(false);
+    };
+
     const handleCloseWriteUpDialog = () => {
         setNavigationDirection('backward');
         setIsWriteUpDialogOpen(false);
+    };
+
+    const handleOpenProfileDateDialog = () => {
+        setNavigationDirection('forward');
+        setIsProfileDateDialogOpen(true);
+    };
+
+    const handleCloseProfileDateDialog = () => {
+        setNavigationDirection('backward');
+        setIsProfileDateDialogOpen(false);
+    };
+
+    const getSubtitleInputHeight = () => {
+        const lines = subtitle.split('\n').length;
+        const baseHeight = 40;
+        const lineHeight = 20;
+        const maxHeight = 80;
+        return Math.min(baseHeight + (lines - 1) * lineHeight, maxHeight);
+    };
+
+    const getHighlightInputHeight = () => {
+        const lines = highlight.split('\n').length;
+        const baseHeight = 112;
+        const lineHeight = 20;
+        const maxHeight = 220;
+        return Math.min(baseHeight + Math.max(lines - 1, 0) * lineHeight, maxHeight);
     };
 
     const post: TextPost = {
@@ -45,86 +102,143 @@ const WithTemplateTEXT: React.FC<WithTemplateTEXTProps> = ({ title, onBackToFeed
             Title: title || 'Untitled Project',
             Subtitle: subtitle || undefined,
             Highlight: highlight || 'Add a highlight to preview this template.',
+            profileDate: profileDate,
         },
         writeUpData: writeUpData || undefined,
     };
 
-    const handleAddPost = () => {
-        if (!isValid) return;
+    const resetForm = () => {
+        setSubtitle('');
+        setHighlight('');
+        setWriteUpData('');
+        setProfileDate(() => {
+            const today = new Date();
+            const month = (today.getMonth() + 1).toString().padStart(2, '0');
+            const day = today.getDate().toString().padStart(2, '0');
+            const year = today.getFullYear();
+            return `${month}/${day}/${year}`;
+        });
+    };
 
+    const submitPost = (postValue: TextPost) => {
         const postId = Math.floor(Math.random() * 1000000000).toString();
 
         setPost({
             key: 'posts',
             itemId: postId,
-            value: {
-                postTemplate: 'Text',
-                TemplateData: {
-                    Title: title,
-                    Subtitle: subtitle || undefined,
-                    Highlight: highlight,
-                },
-                writeUpData: writeUpData || undefined,
-            },
+            value: postValue,
             privacy: 'PUBLIC',
-            searchKeys: ['title', 'subtitle', 'highlight', 'writeUpData'],
+            searchKeys: ['title', 'subtitle', 'highlight', 'writeUpData', 'profileDate'],
         });
 
-        setSubtitle('');
-        setHighlight('');
-        setWriteUpData('');
-        
-        // Navigate back to Feed
+        resetForm();
         if (onBackToFeed) {
             onBackToFeed();
         }
     };
 
+    const handleAddPost = () => {
+        if (!isValid) return;
+
+        submitPost({
+            postTemplate: 'Text',
+            TemplateData: {
+                Title: title,
+                Subtitle: subtitle || undefined,
+                Highlight: highlight,
+                profileDate: profileDate,
+            },
+            writeUpData: writeUpData || undefined,
+        });
+    };
+
     return (
         <>
-        <AnimatedWrapper direction={navigationDirection}>
-            <View className='p-4 h-full overflow-clip'>
-                <View className='border-b border-subtle-border pb-4'>
-                    <Template post={post} />
+            <AnimatedWrapper direction={navigationDirection}>
+                <View className='p-4 h-full overflow-clip'>
+                    <View className='border-b border-subtle-border pb-4'>
+                        <Template post={post} />
+                    </View>
+                    <ScrollShadow LinearGradientComponent={LinearGradient}>
+                        <ScrollView>
+                            <Column className='mt-6 gap-4 pb-10'>
+                                <PoppinsText className='text-primary-text text-xl font-bold'>{title}</PoppinsText>
+                                <TouchableOpacity
+                                    onPress={handleOpenSubtitleDialog}
+                                    className='p-4 border border-subtle-border rounded-lg bg-inner-background'
+                                    style={{ backgroundColor: 'rgba(0, 0, 0, 0.25)' }}
+                                >
+                                    <PoppinsText className='text-muted-text'>
+                                        {subtitle.trim() ? subtitle : 'Subtitle'}
+                                    </PoppinsText>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={handleOpenHighlightDialog}
+                                    className='p-4 border border-subtle-border rounded-lg bg-inner-background min-h-28'
+                                    style={{ backgroundColor: 'rgba(0, 0, 0, 0.25)' }}
+                                >
+                                    <PoppinsText className='text-muted-text'>
+                                        {highlight.trim() ? highlight : 'Highlight'}
+                                    </PoppinsText>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={handleOpenProfileDateDialog}
+                                    className='p-4 border border-subtle-border rounded-lg bg-inner-background'
+                                    style={{ backgroundColor: 'rgba(0, 0, 0, 0.25)' }}
+                                >
+                                    <PoppinsText className='text-muted-text'>
+                                        {profileDate.trim() ? profileDate : 'Project Date'}
+                                    </PoppinsText>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={handleOpenWriteUpDialog}
+                                    className='p-4 border border-subtle-border rounded-lg bg-inner-background'
+                                    style={{ backgroundColor: 'rgba(0, 0, 0, 0.25)' }}
+                                >
+                                    <PoppinsText className='text-muted-text'>
+                                        {writeUpData.trim() ? writeUpData.substring(0, 100) + (writeUpData.length > 100 ? '...' : '') : 'Tap to add write up content'}
+                                    </PoppinsText>
+                                </TouchableOpacity>
+                                {isValid ? (
+                                    <AppButton variant='primary' className='w-full' onPress={handleAddPost}>
+                                        <PoppinsText weight='medium'>{`Create Post`}</PoppinsText>
+                                    </AppButton>
+                                ) : (
+                                    <StatusButton buttonText='Create Post' buttonAltText='REQUIRED' className='w-full' />
+                                )}
+                            </Column>
+                        </ScrollView>
+                    </ScrollShadow>
                 </View>
-                <ScrollShadow LinearGradientComponent={LinearGradient}>
-                    <ScrollView>
-                        <Column className='mt-6 gap-4 pb-10'>
-                            <PoppinsText className='text-primary-text text-xl font-bold'>{title}</PoppinsText>
-                            <PoppinsTextInput
-                                value={subtitle}
-                                onChangeText={setSubtitle}
-                                placeholder='Subtitle'
-                            />
-                            <PoppinsTextInput
-                                value={highlight}
-                                onChangeText={setHighlight}
-                                placeholder='Highlight'
-                                multiline
-                                numberOfLines={4}
-                                className='h-28'
-                            />
-                            <TouchableOpacity
-                                onPress={handleOpenWriteUpDialog}
-                                className='p-4 border border-subtle-border rounded-lg bg-inner-background'
-                            >
-                                <PoppinsText className='text-muted-text'>
-                                    {writeUpData.trim() ? writeUpData.substring(0, 100) + (writeUpData.length > 100 ? '...' : '') : 'Tap to add write up content'}
-                                </PoppinsText>
-                            </TouchableOpacity>
-                            {isValid ? (
-                                <AppButton variant='primary' className='w-full' onPress={handleAddPost}>
-                                    <PoppinsText weight='medium'>{`Create Post`}</PoppinsText>
-                                </AppButton>
-                            ) : (
-                                <StatusButton buttonText='Create Post' buttonAltText='REQUIRED' className='w-full' />
-                            )}
-                        </Column>
-                    </ScrollView>
-                </ScrollShadow>
-            </View>
-        </AnimatedWrapper>
+            </AnimatedWrapper>
         
+        <TextFieldDialog
+            isOpen={isSubtitleDialogOpen}
+            onOpenChange={handleCloseSubtitleDialog}
+            value={subtitle}
+            onChangeText={setSubtitle}
+            placeholder='Subtitle'
+            inputHeight={getSubtitleInputHeight()}
+        />
+
+        <TextFieldDialog
+            isOpen={isHighlightDialogOpen}
+            onOpenChange={handleCloseHighlightDialog}
+            value={highlight}
+            onChangeText={setHighlight}
+            placeholder='Highlight'
+            multiline
+            inputHeight={getHighlightInputHeight()}
+        />
+
+        <DateFieldDialog
+            isOpen={isProfileDateDialogOpen}
+            onOpenChange={handleCloseProfileDateDialog}
+            value={profileDate}
+            onChangeText={setProfileDate}
+            placeholder='Project Date'
+        />
+
         <WriteUpDialog
             isOpen={isWriteUpDialogOpen}
             onOpenChange={handleCloseWriteUpDialog}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { ScrollShadow } from 'heroui-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -14,20 +14,37 @@ import Template from './Post/Templates/Template';
 import Column from './layout/Column';
 import ProfileHeader from './ProfileHeader';
 import ProfileEditDialog from './ui/dialog/ProfileEditDialog';
+import PostDialog from './PostDialog';
+import { PostType } from '../../types/postTypes';
+
+type ClerkAuthSnapshot = {
+    isLoaded: boolean;
+    isSignedIn: boolean | undefined;
+    getToken: (options: { template?: 'convex'; skipCache?: boolean }) => Promise<string | null>;
+    orgId: string | undefined | null;
+    orgRole: string | undefined | null;
+};
 
 interface ProfileProps {
     currentUserId: string;
     currentUserName?: string;
     signOut: () => void;
+    auth: ClerkAuthSnapshot;
 }
 
-const Profile = ({ currentUserId, currentUserName, signOut }: ProfileProps) => {
+const Profile = ({ currentUserId, currentUserName, signOut, auth }: ProfileProps) => {
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [selectedPost, setSelectedPost] = useState<{ post: PostType; postId: string } | null>(null);
 
     const posts = useUserListGet({
         key: "posts",
         userIds: [currentUserId],
+    });
+
+    const [userData] = useUserVariable<UserData>({
+        key: "userData",
+        privacy: "PUBLIC",
     });
 
     const [profileData, setProfileData] = useUserVariable<ProfileData>({
@@ -48,24 +65,20 @@ const Profile = ({ currentUserId, currentUserName, signOut }: ProfileProps) => {
         }
 
         const firstName = currentUserName.trim().split(/\s+/)[0];
-        const currentUsername = profileData?.value?.username;
+        const currentUsername = profileData?.value?.username?.trim();
 
         if (!firstName) {
             return;
         }
 
-        const shouldSyncUsername = !currentUsername || currentUsername === currentUserName;
-
-        if (!shouldSyncUsername || currentUsername === firstName) {
+        if (currentUsername) {
             return;
         }
 
-        if (currentUsername !== firstName) {
-            setProfileData({
-                ...profileData?.value,
-                username: firstName
-            });
-        }
+        setProfileData({
+            ...profileData?.value,
+            username: firstName
+        });
     }, [currentUserName, profileData.state.isSyncing, profileData?.value?.username]);
 
     const handleEditProfile = () => {
@@ -73,11 +86,21 @@ const Profile = ({ currentUserId, currentUserName, signOut }: ProfileProps) => {
     };
 
     const handleProfileSave = (updatedProfile: ProfileData) => {
-        setProfileData(updatedProfile);
+        const fallbackUsername = currentUserName?.trim().split(/\s+/)[0] || '';
+        const latestProfile = profileData?.value ?? profileData?.confirmedValue ?? { username: fallbackUsername };
+
+        setProfileData({
+            ...latestProfile,
+            ...updatedProfile,
+        });
     };
 
     const handleLoadingChange = (loading: boolean) => {
         setIsLoading(loading);
+    };
+
+    const handleOpenPost = (post: PostType, postId: string) => {
+        setSelectedPost({ post, postId });
     };
 
     // import type { ProfileData } from "../../types/profile";
@@ -88,7 +111,7 @@ const Profile = ({ currentUserId, currentUserName, signOut }: ProfileProps) => {
             <View className='-translate-y-20'>
                 <ScrollShadow LinearGradientComponent={LinearGradient} >
                     <ScrollView className='h-screen'>
-                        <View>
+                        <View className='mb-20'>
                             {isLoading && (
                                 <View className="absolute inset-0 bg-black/50 z-50 flex items-center justify-center">
                                     <PoppinsText className="text-white text-lg">Loading...</PoppinsText>
@@ -99,33 +122,41 @@ const Profile = ({ currentUserId, currentUserName, signOut }: ProfileProps) => {
                                 showEditButtons={true}
                                 onEditPfp={handleEditProfile}
                                 onEditBanner={handleEditProfile}
-                                height={300}
+                                height={350}
                             />
                             <Column className='px-4'>
+                                {userData?.value?.email ? (
+                                    <PoppinsText className="text-sm text-muted-text mb-3">
+                                        {userData.value.email}
+                                    </PoppinsText>
+                                ) : null}
+
                                 <AppButton variant="outline" className="h-12 w-30" onPress={() => signOut()}>
                                     <PoppinsText>Sign Out</PoppinsText>
                                 </AppButton>
 
                                 <Column>
                                     {posts?.map((post: any, index: number) => {
-                                        const text = post?.value?.text ?? 'HELLO';
                                         const postId = post?.itemId ?? 'ID';
+                                        const postValue = post?.value as PostType;
 
                                         return (
-                                            <View key={index}>
+                                            <TouchableOpacity key={index} activeOpacity={0.9} onPress={() => handleOpenPost(postValue, postId)}>
+                                                <View pointerEvents='none'>
 
-                                                {post.value.postTemplate === 'Image' && !post.value.imageTemplateVersion ? (
-                                                    <>
-                                                        <PoppinsText>NO imageTemplateVersion</PoppinsText>
-                                                        <PoppinsText>{JSON.stringify(post.value)}</PoppinsText>
-                                                    </>
-                                                ) : (
-                                                    <Template post={post.value} />
-                                                )}
-                                            </View>
+                                                    {post.value.postTemplate === 'Image' && !post.value.imageTemplateVersion ? (
+                                                        <>
+                                                            <PoppinsText>NO imageTemplateVersion</PoppinsText>
+                                                            <PoppinsText>{JSON.stringify(post.value)}</PoppinsText>
+                                                        </>
+                                                    ) : (
+                                                        <Template post={postValue} />
+                                                    )}
+                                                </View>
+                                            </TouchableOpacity>
                                             // <View key={index} style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc' }}>
                                             //     <PoppinsText weight='medium' color='white'>Post ID: {postId}</PoppinsText>
-                                            //     <PoppinsText weight='medium' color='white'>{text}</PoppinsText>
+                                            //     <PoppinsText weight='medium' color='white'>{post?.value?.text ?? 'HELLO'}</PoppinsText>
                                             // </View>
 
                                         );
@@ -144,6 +175,15 @@ const Profile = ({ currentUserId, currentUserName, signOut }: ProfileProps) => {
                 profileData={profileData?.value}
                 onSave={handleProfileSave}
                 onLoadingChange={handleLoadingChange}
+            />
+
+            <PostDialog
+                isOpen={selectedPost !== null}
+                onOpenChange={(open: boolean) => !open && setSelectedPost(null)}
+                post={selectedPost?.post ?? null}
+                postId={selectedPost?.postId ?? null}
+                userId={currentUserId}
+                auth={auth}
             />
         </>
     );

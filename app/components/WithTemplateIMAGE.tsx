@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useUserListSet } from '../../hooks/useUserListSet';
@@ -14,18 +13,27 @@ import AnimatedWrapper from './ui/AnimatedWrapper';
 interface WithTemplateIMAGEProps {
     title: string;
     onBackToFeed?: () => void;
+    initialImageTemplateVersion?: 'collage' | 'slideshow';
 }
 
 const WithTemplateIMAGE: React.FC<WithTemplateIMAGEProps> = ({
     title,
     onBackToFeed,
+    initialImageTemplateVersion = 'collage',
 }) => {
     const [subtitle, setSubtitle] = useState('');
     const [imageUrls, setImageUrls] = useState<string[]>([]);
     const [writeUpData, setWriteUpData] = useState('');
-    const [imageTemplateVersion, setImageTemplateVersion] = useState<'collage' | 'slideshow'>('collage');
+    const [imageTemplateVersion, setImageTemplateVersion] = useState<'collage' | 'slideshow'>(initialImageTemplateVersion);
     const [currentScreen, setCurrentScreen] = useState<'upload' | 'details'>('upload');
     const [navigationDirection, setNavigationDirection] = useState<'forward' | 'backward'>('forward');
+    const [profileDate, setProfileDate] = useState(() => {
+        const today = new Date();
+        const month = (today.getMonth() + 1).toString().padStart(2, '0');
+        const day = today.getDate().toString().padStart(2, '0');
+        const year = today.getFullYear();
+        return `${month}/${day}/${year}`;
+    });
     const setPost = useUserListSet<PostType>();
 
     const isValid = title.trim().length > 0 && imageUrls.length > 0;
@@ -36,43 +44,57 @@ const WithTemplateIMAGE: React.FC<WithTemplateIMAGEProps> = ({
             ImageUrl: imageUrls.length > 0 ? imageUrls : ['https://placehold.co/600x400.png'],
             Title: title || 'Untitled Project',
             Subtitle: subtitle || undefined,
+            profileDate: profileDate,
         },
         writeUpData: writeUpData || undefined,
         imageTemplateVersion: imageTemplateVersion,
     };
 
-    const handleAddPost = () => {
-        if (!isValid) return;
+    const resetForm = () => {
+        setSubtitle('');
+        setImageUrls([]);
+        setWriteUpData('');
+        setProfileDate(() => {
+            const today = new Date();
+            const month = (today.getMonth() + 1).toString().padStart(2, '0');
+            const day = today.getDate().toString().padStart(2, '0');
+            const year = today.getFullYear();
+            return `${month}/${day}/${year}`;
+        });
+        setCurrentScreen('upload');
+    };
 
+    const submitPost = (postValue: ImagePost) => {
         const postId = Math.floor(Math.random() * 1000000000).toString();
 
         setPost({
             key: 'posts',
             itemId: postId,
-            value: {
-                postTemplate: 'Image',
-                TemplateData: {
-                    ImageUrl: imageUrls,
-                    Title: title,
-                    Subtitle: subtitle || undefined,
-                },
-                writeUpData: writeUpData || undefined,
-                imageTemplateVersion: imageTemplateVersion,
-            },
+            value: postValue,
             privacy: 'PUBLIC',
-            searchKeys: ['title', 'subtitle', 'imageUrls', 'writeUpData'],
+            searchKeys: ['title', 'subtitle', 'imageUrls', 'writeUpData', 'profileDate'],
         });
 
-        // Reset form
-        setSubtitle('');
-        setImageUrls([]);
-        setWriteUpData('');
-        setCurrentScreen('upload');
-        
-        // Navigate back to Feed
+        resetForm();
         if (onBackToFeed) {
             onBackToFeed();
         }
+    };
+
+    const handleAddPost = () => {
+        if (!isValid) return;
+
+        submitPost({
+            postTemplate: 'Image',
+            TemplateData: {
+                ImageUrl: imageUrls,
+                Title: title,
+                Subtitle: subtitle || undefined,
+                profileDate: profileDate,
+            },
+            writeUpData: writeUpData || undefined,
+            imageTemplateVersion: imageTemplateVersion,
+        });
     };
 
     const handleNextToDetails = () => {
@@ -98,12 +120,10 @@ const WithTemplateIMAGE: React.FC<WithTemplateIMAGEProps> = ({
     return (
         <AnimatedWrapper direction={navigationDirection}>
             <Column className='justify-between h-full '>
-                {/* Preview Header */}
                 <View className='border-b border-subtle-border pb-4'>
                     <Template post={post} />
                 </View>
 
-                {/* Screen Content - takes remaining space */}
                 <View>
                     {currentScreen === 'upload' ? (
                         <ImageUploadScreen
@@ -121,6 +141,8 @@ const WithTemplateIMAGE: React.FC<WithTemplateIMAGEProps> = ({
                             setSubtitle={setSubtitle}
                             writeUpData={writeUpData}
                             setWriteUpData={setWriteUpData}
+                            profileDate={profileDate}
+                            setProfileDate={setProfileDate}
                             imageTemplateVersion={imageTemplateVersion}
                             onTemplateVersionChange={handleTemplateVersionChange}
                             onCreatePost={handleAddPost}

@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from "convex/react";
+import { useConvexAuth } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { useEffect, useRef, useState } from "react";
 import { devWarn } from "../utils/devWarnings";
@@ -230,6 +231,8 @@ export function useUserList<T>({
   overwriteStoredPrivacy?: boolean;
   onOpStatusChange?: (info: UserListOpStatusInfo<T>) => void;
 }): [UserListResult<T>, (newValue: T) => void] {
+  const { isLoading: isConvexAuthLoading, isAuthenticated: isConvexAuthenticated } =
+    useConvexAuth();
   const record = useQuery(api.user_lists.get, { key, itemId });
 
   const isSyncing = record === undefined;
@@ -328,6 +331,10 @@ export function useUserList<T>({
   );
 
   const setValue = (newValue: T) => {
+    if (isConvexAuthLoading || !isConvexAuthenticated) {
+      return;
+    }
+
     const startedAt = Date.now();
     const opId = (opIdRef.current += 1);
     const encodedValue = encodeUserValue(newValue);
@@ -457,12 +464,13 @@ export function useUserList<T>({
 
   useEffect(() => {
     if (didAutoCreateRef.current) return;
+    if (isConvexAuthLoading || !isConvexAuthenticated) return;
     if (record !== null) return;
     if (defaultValue === undefined) return;
 
     didAutoCreateRef.current = true;
     setValue(defaultValue as T);
-  }, [record, defaultValue]);
+  }, [defaultValue, isConvexAuthLoading, isConvexAuthenticated, record]);
 
   useEffect(() => {
     return () => {

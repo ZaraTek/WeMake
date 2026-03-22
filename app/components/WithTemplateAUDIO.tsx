@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, Pressable, Text, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Pressable, Text, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { ScrollShadow } from 'heroui-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useUserListSet } from '../../hooks/useUserListSet';
 import type { AudioPost, PostType } from '../../types/postTypes';
 import Template from './Post/Templates/Template';
-import PoppinsTextInput from './ui/forms/PoppinsTextInput';
 import AppButton from './ui/buttons/AppButton';
 import StatusButton from './ui/StatusButton';
 import PoppinsText from './ui/text/PoppinsText';
 import Column from './layout/Column';
 import AnimatedWrapper from './ui/AnimatedWrapper';
+import DateFieldDialog from './ui/dialog/DateFieldDialog';
 import { Dialog } from 'heroui-native';
+import MultiImageUpload from './ui/imageUpload/MultiImageUpload';
 
 interface WithTemplateAUDIOProps {
     title: string;
@@ -25,12 +26,19 @@ const WithTemplateAUDIO: React.FC<WithTemplateAUDIOProps> = ({ title, onBackToFe
     const [coverImageUrl, setCoverImageUrl] = useState('');
     const [writeUpData, setWriteUpData] = useState('');
     const [navigationDirection, setNavigationDirection] = useState<'forward' | 'backward'>('forward');
+    const [profileDate, setProfileDate] = useState(() => {
+        const today = new Date();
+        const month = (today.getMonth() + 1).toString().padStart(2, '0');
+        const day = today.getDate().toString().padStart(2, '0');
+        const year = today.getFullYear();
+        return `${month}/${day}/${year}`;
+    });
     
     // Dialog states
     const [isSubtitleDialogOpen, setIsSubtitleDialogOpen] = useState(false);
     const [isAudioUrlDialogOpen, setIsAudioUrlDialogOpen] = useState(false);
-    const [isCoverImageUrlDialogOpen, setIsCoverImageUrlDialogOpen] = useState(false);
     const [isWriteUpDialogOpen, setIsWriteUpDialogOpen] = useState(false);
+    const [isProfileDateDialogOpen, setIsProfileDateDialogOpen] = useState(false);
     
     const setPost = useUserListSet<PostType>();
 
@@ -45,13 +53,12 @@ const WithTemplateAUDIO: React.FC<WithTemplateAUDIOProps> = ({ title, onBackToFe
     const handleCloseAudioUrlDialog = () => setIsAudioUrlDialogOpen(false);
     const handleAudioUrlPost = () => setIsAudioUrlDialogOpen(false);
     
-    const handleOpenCoverImageUrlDialog = () => setIsCoverImageUrlDialogOpen(true);
-    const handleCloseCoverImageUrlDialog = () => setIsCoverImageUrlDialogOpen(false);
-    const handleCoverImageUrlPost = () => setIsCoverImageUrlDialogOpen(false);
-    
     const handleOpenWriteUpDialog = () => setIsWriteUpDialogOpen(true);
     const handleCloseWriteUpDialog = () => setIsWriteUpDialogOpen(false);
     const handleWriteUpPost = () => setIsWriteUpDialogOpen(false);
+
+    const handleOpenProfileDateDialog = () => setIsProfileDateDialogOpen(true);
+    const handleCloseProfileDateDialog = () => setIsProfileDateDialogOpen(false);
 
     // Dynamic height calculations
     const getSubtitleInputHeight = () => {
@@ -77,41 +84,56 @@ const WithTemplateAUDIO: React.FC<WithTemplateAUDIOProps> = ({ title, onBackToFe
             Subtitle: subtitle || undefined,
             AudioUrl: audioUrl || 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
             CoverImageUrl: coverImageUrl || undefined,
+            profileDate: profileDate,
         },
         writeUpData: writeUpData || undefined,
     };
 
-    const handleAddPost = () => {
-        if (!isValid) return;
+    const resetForm = () => {
+        setSubtitle('');
+        setAudioUrl('');
+        setCoverImageUrl('');
+        setWriteUpData('');
+        setProfileDate(() => {
+            const today = new Date();
+            const month = (today.getMonth() + 1).toString().padStart(2, '0');
+            const day = today.getDate().toString().padStart(2, '0');
+            const year = today.getFullYear();
+            return `${month}/${day}/${year}`;
+        });
+    };
 
+    const submitPost = (postValue: AudioPost) => {
         const postId = Math.floor(Math.random() * 1000000000).toString();
 
         setPost({
             key: 'posts',
             itemId: postId,
-            value: {
-                postTemplate: 'Audio',
-                TemplateData: {
-                    Title: title,
-                    Subtitle: subtitle || undefined,
-                    AudioUrl: audioUrl,
-                    CoverImageUrl: coverImageUrl || undefined,
-                },
-                writeUpData: writeUpData || undefined,
-            },
+            value: postValue,
             privacy: 'PUBLIC',
-            searchKeys: ['title', 'subtitle', 'audioUrl', 'writeUpData'],
+            searchKeys: ['title', 'subtitle', 'audioUrl', 'writeUpData', 'profileDate'],
         });
 
-        setSubtitle('');
-        setAudioUrl('');
-        setCoverImageUrl('');
-        setWriteUpData('');
-        
-        // Navigate back to Feed
+        resetForm();
         if (onBackToFeed) {
             onBackToFeed();
         }
+    };
+
+    const handleAddPost = () => {
+        if (!isValid) return;
+
+        submitPost({
+            postTemplate: 'Audio',
+            TemplateData: {
+                Title: title,
+                Subtitle: subtitle || undefined,
+                AudioUrl: audioUrl,
+                CoverImageUrl: coverImageUrl || undefined,
+                profileDate: profileDate,
+            },
+            writeUpData: writeUpData || undefined,
+        });
     };
 
     return (
@@ -145,14 +167,21 @@ const WithTemplateAUDIO: React.FC<WithTemplateAUDIOProps> = ({ title, onBackToFe
                                     {audioUrl.trim() ? audioUrl : 'Audio URL'}
                                 </PoppinsText>
                             </Pressable>
+                            <MultiImageUpload
+                                imageUrls={coverImageUrl ? [coverImageUrl] : []}
+                                setImageUrls={(urls) => setCoverImageUrl(urls[0] ?? '')}
+                                buttonLabel='Add Cover Image'
+                                emptyLabel='Start by adding your cover image!'
+                                maxImages={1}
+                            />
                             
                             <Pressable
-                                onPress={handleOpenCoverImageUrlDialog}
+                                onPress={handleOpenProfileDateDialog}
                                 className='p-4 border border-subtle-border rounded-lg bg-inner-background'
                                 style={{ backgroundColor: 'rgba(0, 0, 0, 0.25)' }}
                             >
                                 <PoppinsText className='text-muted-text'>
-                                    {coverImageUrl.trim() ? coverImageUrl : 'Cover image URL'}
+                                    {profileDate.trim() ? profileDate : 'Project Date'}
                                 </PoppinsText>
                             </Pressable>
                             
@@ -243,39 +272,6 @@ const WithTemplateAUDIO: React.FC<WithTemplateAUDIOProps> = ({ title, onBackToFe
             </Dialog.Portal>
         </Dialog>
         
-        {/* Cover Image URL Dialog */}
-        <Dialog isOpen={isCoverImageUrlDialogOpen} onOpenChange={handleCloseCoverImageUrlDialog}>
-            <Dialog.Portal className='bg-black/50'>
-                <Dialog.Overlay />
-                <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-                    <Dialog.Content className="w-[90vw] max-w-[500px] bg-background">
-                        <Dialog.Close className='bg-grey' />
-                        <View className="flex-row items-center gap-2">
-                            <TextInput
-                                ref={(input) => {
-                                    if (input && isCoverImageUrlDialogOpen) {
-                                        setTimeout(() => input.focus(), 100);
-                                    }
-                                }}
-                                value={coverImageUrl}
-                                onChangeText={setCoverImageUrl}
-                                placeholder='Cover image URL'
-                                autoCapitalize='none'
-                                autoCorrect={false}
-                                className="flex-1 rounded-lg border border-subtle-border bg-inner-background px-3 py-2 text-text"
-                            />
-                            <Pressable
-                                onPress={handleCoverImageUrlPost}
-                                className="rounded-lg bg-blue-500 px-4 py-2"
-                            >
-                                <Text className="text-white font-semibold">Post</Text>
-                            </Pressable>
-                        </View>
-                    </Dialog.Content>
-                </KeyboardAvoidingView>
-            </Dialog.Portal>
-        </Dialog>
-        
         {/* Write Up Dialog */}
         <Dialog isOpen={isWriteUpDialogOpen} onOpenChange={handleCloseWriteUpDialog}>
             <Dialog.Portal className='bg-black/50'>
@@ -309,6 +305,14 @@ const WithTemplateAUDIO: React.FC<WithTemplateAUDIOProps> = ({ title, onBackToFe
                 </KeyboardAvoidingView>
             </Dialog.Portal>
         </Dialog>
+
+        <DateFieldDialog
+            isOpen={isProfileDateDialogOpen}
+            onOpenChange={handleCloseProfileDateDialog}
+            value={profileDate}
+            onChangeText={setProfileDate}
+            placeholder='Project Date'
+        />
         </>
     );
 };
