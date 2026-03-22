@@ -2,6 +2,7 @@ export type ImageTemplateData = {
   ImageUrl: string[];
   Title: string;
   Subtitle?: string;
+  backgroundUrl?: string;
 };
 
 export type AudioTemplateData = {
@@ -15,6 +16,7 @@ export type TextTemplateData = {
   Title: string;
   Subtitle?: string;
   Highlight: string;
+  backgroundUrl?: string;
 };
 
 export type VideoTemplateData = {

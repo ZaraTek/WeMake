@@ -10,7 +10,8 @@ const FakeTextWrapper = () => {
         TemplateData: {
             Title: 'How to be a drunk ndn',
             Subtitle: 'A poem from poetryfoundation.org',
-            Highlight: "I mumble quietly to no one to maybe stop drinking.\""
+            Highlight: "I mumble quietly to no one to maybe stop drinking.\"",
+            backgroundUrl: "https://i.pinimg.com/originals/a9/28/95/a92895b3583b6bf2b63b6066e94c65c0.jpg"
         },
     });
 

@@ -17,6 +17,20 @@ const TextTemplate = ({ post }: TextTemplateProps) => {
   const [isTyping, setIsTyping] = useState(false);
   const [isCursorVisible, setIsCursorVisible] = useState(true);
 
+  const backgroundUrl =
+    (
+      post.TemplateData as {
+        backgroundUrl?: string;
+        BackgroundUrl?: string;
+      }
+    ).backgroundUrl ??
+    (
+      post.TemplateData as {
+        backgroundUrl?: string;
+        BackgroundUrl?: string;
+      }
+    ).BackgroundUrl;
+
   // Swing value: -1 to 1
   const swingAnim = useRef(new Animated.Value(-1)).current;
 
@@ -91,35 +105,64 @@ const TextTemplate = ({ post }: TextTemplateProps) => {
   }, [fullHighlight]);
 
   return (
-    <View className="w-full rounded-2xl border border-subtle-border bg-inner-background p-4">
-      <View className="flex-row items-start justify-between">
-        <View className="flex-1 pr-3">
-          <Text className="text-2xl font-bold text-primary-accent">
-            {post.TemplateData.Title}
-          </Text>
+    <View className="relative w-full overflow-hidden rounded-2xl border border-subtle-border bg-inner-background p-4">
+      {backgroundUrl ? (
+        <>
+          <Image
+            source={{ uri: backgroundUrl }}
+            resizeMode="cover"
+            blurRadius={10}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+            }}
+          />
+          <View
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0,0,0,0.6)",
+            }}
+          />
+        </>
+      ) : null}
 
-          <Text className="mt-1 text-base text-muted-text">
-            {post.TemplateData.Subtitle}
-          </Text>
+      <View className="relative z-10">
+        <View className="flex-row items-start justify-between">
+          <View className="flex-1 pr-3">
+            <Text className="text-2xl font-bold text-primary-accent">
+              {post.TemplateData.Title}
+            </Text>
+
+            <Text className="mt-1 text-base text-muted-text">
+              {post.TemplateData.Subtitle}
+            </Text>
+          </View>
+
+          <Animated.Image
+            source={pen}
+            className="opacity-80"
+            style={{
+              width: 100,
+              height: 100,
+              borderRadius: 12,
+              transform: [{ rotate: penRotate }],
+            }}
+            resizeMode="contain"
+          />
         </View>
 
-        <Animated.Image
-          source={pen}
-          className="opacity-80"
-          style={{
-            width: 100,
-            height: 100,
-            borderRadius: 12,
-            transform: [{ rotate: penRotate }],
-          }}
-          resizeMode="contain"
-        />
+        <Text className="mt-4 text-xl italic leading-8 tracking-wide text-text">
+          {visibleHighlight}
+          {fullHighlight ? (isCursorVisible ? "|" : " ") : ""}
+        </Text>
       </View>
-
-      <Text className="mt-4 text-xl italic leading-8 tracking-wide text-text">
-        {visibleHighlight}
-        {fullHighlight ? (isCursorVisible ? "|" : " ") : ""}
-      </Text>
     </View>
   );
 };

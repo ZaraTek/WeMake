@@ -26,6 +26,7 @@ import FakeAudioWrapper from './Post/FakeAudioWrapper';
 import FakeVideoWrapper from './Post/FakeVideoWrapper';
 import FakeTextWrapper from './Post/FakeTextWrapper';
 import FakeImageSlideshowWrapper from './Post/FakeImageSlideshowWrapper';
+import FakeConvexProfileHeader from './FakeConvexProfileHeader';
 
 
 
@@ -61,53 +62,22 @@ const MainPage: React.FC<MainPageProps> = ({
     // You can add new game-specific components here as needed
 
     return (
-        <ScrollView
-            className="w-full h-full p-4"
-            contentContainerStyle={{ paddingBottom: 24 }}
-            showsVerticalScrollIndicator={false}
-        >
-            {/* <AppButton variant="outline" className="h-14 w-14" onPress={() => signOut()}>
-                <UserIcon size={24} color={"white"} />
-            </AppButton> */}
-
-            <View className="gap-4">
-                <FakeAudioWrapper />
-                <FakeVideoWrapper />
-                <FakeTextWrapper />
-                <FakeImageCollageWrapper />
-                <FakeImageSlideshowWrapper />
-            </View>
-
-            {/*        
-            <PoppinsText weight='medium' color='white'>Main Page</PoppinsText>
-            <PoppinsText weight='medium' color='white'>Current User ID: {currentUserId}</PoppinsText>
-
-
-
-            {activePage === "feed" && <Feed />}
-            {activePage === "profile" && <Profile currentUserId={currentUserId} />}
-            {activePage === "newPost" && <NewPost />}
-
-
-
-            <Row gap={3} className='absolute bottom-0 left-0 right-0 p-4 items-center justify-center'>
-                <Row className='w-min '>
-
-                    <AppButton variant='primary' className='w-30' onPress={() => setActivePage("feed")}>
-                        <PoppinsText weight='medium' color='white'>Feed</PoppinsText>
-                    </AppButton>
-                    <AppButton variant='primary' className='w-30' onPress={() => setActivePage("profile")}>
-                        <PoppinsText weight='medium' color='white'>Profile</PoppinsText>
-                    </AppButton>
-                    <AppButton variant='primary' className='w-30' onPress={() => setActivePage("newPost")}>
-                        <PoppinsText weight='medium' color='white'>New Post</PoppinsText>
-                    </AppButton>
-                </Row>
-            </Row>
-
-             */}
-
-        </ScrollView>
+        <View>
+            <FakeConvexProfileHeader className="-mt-12" />
+            <ScrollView
+                className="w-full h-full"
+                contentContainerStyle={{ paddingBottom: 24 }}
+                showsVerticalScrollIndicator={false}
+            >
+                <View className="gap-4 p-4">
+                    <FakeAudioWrapper />
+                    <FakeVideoWrapper />
+                    <FakeTextWrapper />
+                    <FakeImageCollageWrapper />
+                    <FakeImageSlideshowWrapper />
+                </View>
+            </ScrollView>
+        </View>
     );
 };
 

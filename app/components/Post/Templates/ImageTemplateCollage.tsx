@@ -1,25 +1,27 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Image, Modal, Pressable, Text, View, useWindowDimensions } from "react-native";
+import { ActivityIndicator, Image, Modal, Pressable, Text, View, useWindowDimensions } from "react-native";
 import type { ImagePost } from "../../../../types/postTypes";
+import MasonryImageGrid, { type MasonryImageItem } from "./MasonryImageGrid";
 
 type ImageTemplateProps = {
   post: ImagePost;
 };
 
 const GAP = 8;
-const FALLBACK_RATIOS = [1.2, 1.45, 0.95, 1.3, 1.1]; // height / width fallback
 
 const ImageTemplate = ({ post }: ImageTemplateProps) => {
   const [containerWidth, setContainerWidth] = useState(0);
   const [imageSizes, setImageSizes] = useState<Record<string, { w: number; h: number }>>({});
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedImageSize, setSelectedImageSize] = useState<{ w: number; h: number } | null>(null);
+  const [isModalImageLoaded, setIsModalImageLoaded] = useState(false);
+
   const images = post.TemplateData.ImageUrl ?? [];
+  const validImages = useMemo(() => images.filter((u): u is string => !!u), [images]);
+  const backgroundImageUrl = validImages[0] ?? null;
 
   useEffect(() => {
-    const uniqueUris = [...new Set(images)].filter(Boolean);
-
-    uniqueUris.forEach((uri) => {
+    validImages.forEach((uri) => {
       if (imageSizes[uri]) return;
 
       Image.getSize(
@@ -28,16 +30,14 @@ const ImageTemplate = ({ post }: ImageTemplateProps) => {
           if (!w || !h) return;
           setImageSizes((prev) => (prev[uri] ? prev : { ...prev, [uri]: { w, h } }));
         },
-        () => {
-          // keep fallback ratio if size fetch fails
-        }
+        () => {}
       );
     });
+  }, [validImages, imageSizes]);
 
-    return () => {
-      // cleanup
-    };
-  }, [images, imageSizes]);
+  useEffect(() => {
+    setIsModalImageLoaded(false);
+  }, [selectedImage]);
 
   useEffect(() => {
     if (!selectedImage) {
@@ -45,7 +45,6 @@ const ImageTemplate = ({ post }: ImageTemplateProps) => {
       return;
     }
 
-    // Use cached size if already known
     if (imageSizes[selectedImage]) {
       setSelectedImageSize(imageSizes[selectedImage]);
       return;
@@ -71,7 +70,9 @@ const ImageTemplate = ({ post }: ImageTemplateProps) => {
     };
   }, [selectedImage, imageSizes]);
 
-  const numColumns = images.length <= 1 ? 1 : 2;
+  const allImageSizesReady = validImages.every((uri) => !!imageSizes[uri]);
+
+  const numColumns = validImages.length <= 1 ? 1 : 2;
   const itemWidth =
     containerWidth > 0
       ? (containerWidth - GAP * (numColumns - 1)) / numColumns
@@ -80,20 +81,17 @@ const ImageTemplate = ({ post }: ImageTemplateProps) => {
   const masonryColumns = useMemo(() => {
     const cols = Array.from({ length: numColumns }, () => ({
       totalHeight: 0,
-      items: [] as {
-        key: string;
-        uri: string;
-        displayHeight: number;
-        aspectRatio: number; // width / height
-      }[],
+      items: [] as MasonryImageItem[],
     }));
 
-    images.forEach((uri, index) => {
+    if (!allImageSizesReady || itemWidth <= 0) return cols.map((c) => c.items);
+
+    validImages.forEach((uri, index) => {
       const size = imageSizes[uri];
-      const ratioHOverW =
-        size ? size.h / size.w : FALLBACK_RATIOS[index % FALLBACK_RATIOS.length];
-      const aspectRatio =
-        size ? size.w / size.h : 1 / ratioHOverW;
+      if (!size) return;
+
+      const ratioHOverW = size.h / size.w;
+      const aspectRatio = size.w / size.h;
       const height = Math.round(Math.max(itemWidth, 1) * ratioHOverW);
 
       let shortestCol = 0;
@@ -101,20 +99,22 @@ const ImageTemplate = ({ post }: ImageTemplateProps) => {
         if (cols[i].totalHeight < cols[shortestCol].totalHeight) shortestCol = i;
       }
 
+      const displayHeight = numColumns === 1 ? Math.round(containerWidth * ratioHOverW) : height;
+
       cols[shortestCol].items.push({
         key: `${uri}-${index}`,
         uri,
-        displayHeight: numColumns === 1 ? Math.round(containerWidth * ratioHOverW) : height,
+        displayHeight,
         aspectRatio,
       });
-      cols[shortestCol].totalHeight += (numColumns === 1 ? Math.round(containerWidth * ratioHOverW) : height) + GAP;
+
+      cols[shortestCol].totalHeight += displayHeight + GAP;
     });
 
     return cols.map((c) => c.items);
-  }, [images, imageSizes, itemWidth, containerWidth, numColumns]);
+  }, [validImages, imageSizes, itemWidth, containerWidth, numColumns, allImageSizesReady]);
 
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
-
   const maxModalWidth = screenWidth * 0.92;
   const maxModalHeight = screenHeight * 0.9;
 
@@ -133,37 +133,45 @@ const ImageTemplate = ({ post }: ImageTemplateProps) => {
 
   return (
     <View
-      className="w-full rounded-2xl border border-subtle-border bg-inner-background p-4"
+      className="relative w-full overflow-hidden rounded-2xl border border-subtle-border bg-inner-background p-4"
       onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width - 32)}
     >
-      <Text className="text-2xl font-bold text-primary-accent">
-        {post.TemplateData.Title}
-      </Text>
-      <Text className="mt-1 text-base text-muted-text">
-        {post.TemplateData.Subtitle}
-      </Text>
+      {backgroundImageUrl ? (
+        <>
+          <Image
+            source={{ uri: backgroundImageUrl }}
+            resizeMode="cover"
+            blurRadius={10}
+            style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+          />
+          <View
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0,0,0,0.6)",
+            }}
+          />
+        </>
+      ) : null}
 
-      <View style={{ marginTop: 16, flexDirection: "row", gap: GAP }}>
-        {masonryColumns.map((column, colIndex) => (
-          <View key={`col-${colIndex}`} style={{ flex: 1, gap: GAP }}>
-            {column.map((img) => (
-              <Pressable key={img.key} onPress={() => setSelectedImage(img.uri)}>
-                <Image
-                  source={{ uri: img.uri }}
-                  style={{
-                    width: "100%",
-                    aspectRatio: img.aspectRatio, // preserves original ratio
-                    borderRadius: 12,
-                    borderWidth: 1,
-                    borderColor: "#E5E7EB",
-                    backgroundColor: "#F9FAFB",
-                  }}
-                  resizeMode="contain" // no crop
-                />
-              </Pressable>
-            ))}
+      <View className="relative z-10">
+        <Text className="text-2xl font-bold text-primary-accent">{post.TemplateData.Title}</Text>
+        <Text className="mt-1 text-base text-muted-text">{post.TemplateData.Subtitle}</Text>
+
+        {allImageSizesReady && containerWidth > 0 ? (
+          <MasonryImageGrid
+            masonryColumns={masonryColumns}
+            gap={GAP}
+            onSelectImage={setSelectedImage}
+          />
+        ) : (
+          <View style={{ marginTop: 16, minHeight: 140, justifyContent: "center", alignItems: "center" }}>
+            <ActivityIndicator />
           </View>
-        ))}
+        )}
       </View>
 
       <Modal
@@ -185,11 +193,12 @@ const ImageTemplate = ({ post }: ImageTemplateProps) => {
           <Pressable onPress={() => {}}>
             <Image
               source={selectedImage ? { uri: selectedImage } : undefined}
+              onLoad={() => setIsModalImageLoaded(true)}
               style={{
                 width: modalImageSize.w,
                 height: modalImageSize.h,
                 borderRadius: 16,
-                // backgroundColor removed so no visible box
+                opacity: isModalImageLoaded ? 1 : 0,
               }}
               resizeMode="contain"
             />
