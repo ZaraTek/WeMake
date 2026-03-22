@@ -4,4 +4,4 @@ node_modules
 .env.local
 .env
 
-mainPage.tsx
+MainPage.tsx
