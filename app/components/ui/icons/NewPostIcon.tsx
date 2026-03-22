@@ -16,3 +16,5 @@ export function NewPostIcon({ size = 24, color = 'white' }: NewPostIconProps) {
     </Svg>
   );
 }
+
+export default NewPostIcon;

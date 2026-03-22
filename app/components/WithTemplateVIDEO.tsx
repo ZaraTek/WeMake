@@ -15,9 +15,10 @@ import AnimatedWrapper from './ui/AnimatedWrapper';
 
 interface WithTemplateVIDEOProps {
     title: string;
+    onBackToFeed?: () => void;
 }
 
-const WithTemplateVIDEO: React.FC<WithTemplateVIDEOProps> = ({ title }) => {
+const WithTemplateVIDEO: React.FC<WithTemplateVIDEOProps> = ({ title, onBackToFeed }) => {
     const [subtitle, setSubtitle] = useState('');
     const [videoUrl, setVideoUrl] = useState('');
     const [previewUrl, setPreviewUrl] = useState('');
@@ -68,6 +69,11 @@ const WithTemplateVIDEO: React.FC<WithTemplateVIDEOProps> = ({ title }) => {
         setPreviewUrl('');
         setThumbnailUrl('');
         setWriteUpData('');
+        
+        // Navigate back to Feed
+        if (onBackToFeed) {
+            onBackToFeed();
+        }
     };
 
     return (

@@ -16,9 +16,10 @@ import AnimatedWrapper from './ui/AnimatedWrapper';
 
 interface WithTemplateTEXTProps {
     title: string;
+    onBackToFeed?: () => void;
 }
 
-const WithTemplateTEXT: React.FC<WithTemplateTEXTProps> = ({ title }) => {
+const WithTemplateTEXT: React.FC<WithTemplateTEXTProps> = ({ title, onBackToFeed }) => {
     const [subtitle, setSubtitle] = useState('');
     const [highlight, setHighlight] = useState('');
     const [writeUpData, setWriteUpData] = useState('');
@@ -72,6 +73,11 @@ const WithTemplateTEXT: React.FC<WithTemplateTEXTProps> = ({ title }) => {
         setSubtitle('');
         setHighlight('');
         setWriteUpData('');
+        
+        // Navigate back to Feed
+        if (onBackToFeed) {
+            onBackToFeed();
+        }
     };
 
     return (

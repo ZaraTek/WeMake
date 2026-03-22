@@ -16,3 +16,5 @@ export function FeedIcon({ size = 24, color = 'white' }: FeedIconProps) {
     </Svg>
   );
 }
+
+export default FeedIcon;

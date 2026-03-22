@@ -17,11 +17,13 @@ import AnimatedWrapper from './ui/AnimatedWrapper';
 interface PickTemplateProps {
     title: string;
     onBack: () => void;
+    onBackToFeed: () => void;
 }
 
 const PickTemplate: React.FC<PickTemplateProps> = ({
     title,
     onBack,
+    onBackToFeed,
 }) => {
     const [selectedTemplate, setSelectedTemplate] = useState<'Image' | 'Text' | 'Video' | 'Audio' | null>(null);
     const [navigationDirection, setNavigationDirection] = useState<'forward' | 'backward'>('forward');
@@ -54,13 +56,13 @@ const PickTemplate: React.FC<PickTemplateProps> = ({
             <AnimatedWrapper direction={navigationDirection}>
                 <View className='pt-12'>
                     {selectedTemplate === 'Image' ? (
-                        <WithTemplateIMAGE title={title} />
+                        <WithTemplateIMAGE title={title} onBackToFeed={onBackToFeed} />
                     ) : selectedTemplate === 'Text' ? (
-                        <WithTemplateTEXT title={title} />
+                        <WithTemplateTEXT title={title} onBackToFeed={onBackToFeed} />
                     ) : selectedTemplate === 'Video' ? (
-                        <WithTemplateVIDEO title={title} />
+                        <WithTemplateVIDEO title={title} onBackToFeed={onBackToFeed} />
                     ) : selectedTemplate === 'Audio' ? (
-                        <WithTemplateAUDIO title={title} />
+                        <WithTemplateAUDIO title={title} onBackToFeed={onBackToFeed} />
                     ) : null}
 
                     <View className='absolute top-0 left-0 p-4 z-50'>

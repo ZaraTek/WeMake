@@ -16,3 +16,5 @@ export function ProfileIcon({ size = 24, color = 'white' }: ProfileIconProps) {
     </Svg>
   );
 }
+
+export default ProfileIcon;

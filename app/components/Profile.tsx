@@ -9,6 +9,8 @@ import PoppinsText from './ui/text/PoppinsText';
 import { UserData } from '../../types/userData';
 import AppButton from './ui/buttons/AppButton';
 import { UserIcon } from 'lucide-react-native';
+import Template from './Post/Templates/Template';
+import Column from './layout/Column';
 
 interface ProfileProps {
     currentUserId: string;
@@ -32,16 +34,31 @@ const Profile = ({ currentUserId, signOut }: ProfileProps) => {
                     </AppButton>
                     <PoppinsText weight='medium' color='white'>My Profile</PoppinsText>
                     <PoppinsText weight='medium' color='white'>{`User ID: ${currentUserId}`}</PoppinsText>
-                    {posts?.map((post: any, index: number) => {
-                        const text = post?.value?.text ?? 'HELLO';
-                        const postId = post?.itemId ?? 'ID';
-                        return (
-                            <View key={index} style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc' }}>
-                                <PoppinsText weight='medium' color='white'>Post ID: {postId}</PoppinsText>
-                                <PoppinsText weight='medium' color='white'>{text}</PoppinsText>
-                            </View>
-                        );
-                    })}
+                    <Column>
+                        {posts?.map((post: any, index: number) => {
+                            const text = post?.value?.text ?? 'HELLO';
+                            const postId = post?.itemId ?? 'ID';
+
+                            return (
+                                <View key={index}>
+                                    {post.value.postTemplate === 'Image' && !post.value.imageTemplateVersion ? (
+                                        <>
+                                            <PoppinsText>NO imageTemplateVersion</PoppinsText>
+                                            <PoppinsText>{JSON.stringify(post.value)}</PoppinsText>
+                                        </>
+                                    ) : (
+                                        <Template post={post.value} />
+                                    )}
+                                </View>
+                                // <View key={index} style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc' }}>
+                                //     <PoppinsText weight='medium' color='white'>Post ID: {postId}</PoppinsText>
+                                //     <PoppinsText weight='medium' color='white'>{text}</PoppinsText>
+                                // </View>
+
+                            );
+
+                        })}
+                    </Column>
                 </View>
             </ScrollView>
         </ScrollShadow>

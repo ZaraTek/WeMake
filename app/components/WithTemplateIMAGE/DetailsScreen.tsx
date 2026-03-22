@@ -50,20 +50,20 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({
     return (
         <>
             <AnimatedWrapper>
-                <Column className='flex-1 p-4 gap-6'>
-                    <Column className='gap-2'>
+                <Column className='p-4 gap-6'>
+                    {/* <Column className='gap-2'>
                         <PoppinsText className='text-primary-text text-2xl font-bold'>{title}</PoppinsText>
                         <PoppinsText className='text-muted-text text-sm'>Add details and create your post</PoppinsText>
-                    </Column>
+                    </Column> */}
 
-                    <Column className='gap-6 flex-1'>
+                    <Column className='gap-6'>
                         <PoppinsTextInput
                             value={subtitle}
                             onChangeText={setSubtitle}
                             placeholder='Subtitle (optional)'
                         />
 
-                        <Column className='gap-2'>
+                        {/* <Column className='gap-2'>
                             <PoppinsText className='text-primary-text text-base font-medium'>Template Version</PoppinsText>
                             <Row className='gap-2'>
                                 <TouchableOpacity
@@ -79,7 +79,7 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({
                                     <PoppinsText className={`text-center ${imageTemplateVersion === 'slideshow' ? 'text-primary' : 'text-muted-text'}`}>Slideshow</PoppinsText>
                                 </TouchableOpacity>
                             </Row>
-                        </Column>
+                        </Column> */}
 
                         <TouchableOpacity
                             onPress={handleOpenWriteUpDialog}

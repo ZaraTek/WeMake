@@ -15,9 +15,10 @@ import AnimatedWrapper from './ui/AnimatedWrapper';
 
 interface WithTemplateAUDIOProps {
     title: string;
+    onBackToFeed?: () => void;
 }
 
-const WithTemplateAUDIO: React.FC<WithTemplateAUDIOProps> = ({ title }) => {
+const WithTemplateAUDIO: React.FC<WithTemplateAUDIOProps> = ({ title, onBackToFeed }) => {
     const [subtitle, setSubtitle] = useState('');
     const [audioUrl, setAudioUrl] = useState('');
     const [coverImageUrl, setCoverImageUrl] = useState('');
@@ -64,6 +65,11 @@ const WithTemplateAUDIO: React.FC<WithTemplateAUDIOProps> = ({ title }) => {
         setAudioUrl('');
         setCoverImageUrl('');
         setWriteUpData('');
+        
+        // Navigate back to Feed
+        if (onBackToFeed) {
+            onBackToFeed();
+        }
     };
 
     return (
