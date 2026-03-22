@@ -29,7 +29,7 @@ export type ImagePost = {
   postTemplate: "Image";
   TemplateData: ImageTemplateData;
   writeUpData?: string;
-  imageTemplateVersion: string;
+  imageTemplateVersion: "collage" | "slideshow";
 };
 
 export type AudioPost = {
