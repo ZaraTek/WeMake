@@ -104,7 +104,7 @@ function PostAudioPlayer({ uri }: { uri: string }) {
     durationMillis > 0 ? Math.min(1, positionMillis / durationMillis) : 0;
 
   return (
-    <View className="mt-3 rounded-xl border border-subtle-border bg-background p-3">
+    <View className="mt-3 rounded-xl border">
       <Row className="items-center" gap={3}>
         <Pressable
           accessibilityRole="button"
@@ -176,57 +176,86 @@ const AudioTemplate = ({ post }: AudioTemplateProps) => {
   }));
 
   return (
-    <View className="w-full rounded-2xl border border-subtle-border bg-inner-background p-4">
-      <View className="mt-4 w-full flex-row items-center">
-        <Animated.View
-          style={[
-            {
-              width: RECORD_SIZE,
-              height: RECORD_SIZE,
-              alignItems: "center",
-              justifyContent: "center",
-            },
-            spinAnimatedStyle,
-          ]}
-        >
+    <View className="relative w-full overflow-hidden rounded-2xl border border-subtle-border bg-inner-background p-4">
+      {post.TemplateData.CoverImageUrl ? (
+        <>
           <Image
-            source={recordPlayerAsset}
-            className="overflow-hidden "
+            source={{ uri: post.TemplateData.CoverImageUrl }}
+            resizeMode="cover"
+            blurRadius={10}
             style={{
               position: "absolute",
-              width: RECORD_SIZE,
-              height: RECORD_SIZE,
-              left: 0,
               top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
             }}
-            resizeMode="cover"
           />
-          {post.TemplateData.CoverImageUrl ? (
-            <View
-              className="overflow-hidden rounded-full border-2 border-inner-background shadow-sm"
+          <View
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0,0,0,0.6)",
+            }}
+          />
+        </>
+      ) : null}
+
+      <View className="relative z-10">
+        <View className="mt-4 w-full flex-row items-center">
+          <Animated.View
+            style={[
+              {
+                width: RECORD_SIZE,
+                height: RECORD_SIZE,
+                alignItems: "center",
+                justifyContent: "center",
+              },
+              spinAnimatedStyle,
+            ]}
+          >
+            <Image
+              source={recordPlayerAsset}
+              className="overflow-hidden "
               style={{
-                width: COVER_OVERLAY_SIZE,
-                height: COVER_OVERLAY_SIZE,
+                position: "absolute",
+                width: RECORD_SIZE,
+                height: RECORD_SIZE,
+                left: 0,
+                top: 0,
               }}
-            >
-              <Image
-                source={{ uri: post.TemplateData.CoverImageUrl }}
-                className="h-full w-full"
-                resizeMode="cover"
-              />
-            </View>
-          ) : null}
-        </Animated.View>
-        <View className="flex-1 ml-6">
-          <Text className="text-2xl font-bold text-primary-accent">
-            {post.TemplateData.Title}
-          </Text>
-          <Text className="mt-1 text-base text-muted-text">
-            {post.TemplateData.Subtitle}
-          </Text>
+              resizeMode="cover"
+            />
+            {post.TemplateData.CoverImageUrl ? (
+              <View
+                className="overflow-hidden rounded-full border-2 border-inner-background shadow-sm"
+                style={{
+                  width: COVER_OVERLAY_SIZE,
+                  height: COVER_OVERLAY_SIZE,
+                }}
+              >
+                <Image
+                  source={{ uri: post.TemplateData.CoverImageUrl }}
+                  className="h-full w-full"
+                  resizeMode="cover"
+                />
+              </View>
+            ) : null}
+          </Animated.View>
+          <View className="ml-6 flex-1">
+            <Text className="text-2xl font-bold text-primary-accent">
+              {post.TemplateData.Title}
+            </Text>
+            <Text className="mt-1 text-base text-muted-text">
+              {post.TemplateData.Subtitle}
+            </Text>
+          </View>
         </View>
+        <PostAudioPlayer uri={post.TemplateData.AudioUrl} />
       </View>
-      <PostAudioPlayer uri={post.TemplateData.AudioUrl} />
     </View>
   );
 };

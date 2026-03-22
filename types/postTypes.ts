@@ -28,6 +28,7 @@ export type VideoTemplateData = {
 export type ImagePost = {
   postTemplate: "Image";
   TemplateData: ImageTemplateData;
+  imageTemplateVersion: string;
 };
 
 export type AudioPost = {
@@ -44,5 +45,6 @@ export type VideoPost = {
   postTemplate: "Video";
   TemplateData: VideoTemplateData;
 };
+
 
 export type PostType = ImagePost | AudioPost | TextPost | VideoPost;

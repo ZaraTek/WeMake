@@ -2,6 +2,7 @@ import React, { PropsWithChildren, useState } from 'react';
 import { Button } from 'heroui-native/button';
 import { Dialog } from 'heroui-native/dialog';
 import { View } from 'react-native';
+import { ScrollView } from 'react-native';
 import Column from './layout/Column';
 import PoppinsText from './ui/text/PoppinsText';
 import { useUserVariable } from 'hooks/useUserVariable';
@@ -20,7 +21,11 @@ import Row from './layout/Row';
 import AppButton from './ui/buttons/AppButton';
 import { UserIcon } from 'lucide-react-native';
 import { useClerk } from '@clerk/clerk-expo';
-import FakeConvexWrapper from './Post/FakeConvexWrapper';
+import FakeImageCollageWrapper from './Post/FakeImageCollageWrapper';
+import FakeAudioWrapper from './Post/FakeAudioWrapper';
+import FakeVideoWrapper from './Post/FakeVideoWrapper';
+import FakeTextWrapper from './Post/FakeTextWrapper';
+import FakeImageSlideshowWrapper from './Post/FakeImageSlideshowWrapper';
 
 
 
@@ -56,13 +61,24 @@ const MainPage: React.FC<MainPageProps> = ({
     // You can add new game-specific components here as needed
 
     return (
-        <View className='w-full h-full p-4'>
+        <ScrollView
+            className="w-full h-full p-4"
+            contentContainerStyle={{ paddingBottom: 24 }}
+            showsVerticalScrollIndicator={false}
+        >
             {/* <AppButton variant="outline" className="h-14 w-14" onPress={() => signOut()}>
                 <UserIcon size={24} color={"white"} />
             </AppButton> */}
 
-            <FakeConvexWrapper></FakeConvexWrapper>
-{/*        
+            <View className="gap-4">
+                <FakeAudioWrapper />
+                <FakeVideoWrapper />
+                <FakeTextWrapper />
+                <FakeImageCollageWrapper />
+                <FakeImageSlideshowWrapper />
+            </View>
+
+            {/*        
             <PoppinsText weight='medium' color='white'>Main Page</PoppinsText>
             <PoppinsText weight='medium' color='white'>Current User ID: {currentUserId}</PoppinsText>
 
@@ -91,7 +107,7 @@ const MainPage: React.FC<MainPageProps> = ({
 
              */}
 
-        </View>
+        </ScrollView>
     );
 };
 
